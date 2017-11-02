@@ -195,9 +195,17 @@ public class T1 extends AbstractTest {
         logger.info("{},{}", Math.round(n0), Math.round(n1));//-1,-1
     }
 
-    public int A(int i) {
-        return i;
+    @Test
+    public void StringTest(){
+        long start = System.nanoTime();
+        String s = "i " + "am " + "learning " + "now.";
+        //cost 12237 ns
+        logger.info("{},cost {} ns", s, System.nanoTime() - start);
+
+        start = System.nanoTime();
+        StringBuffer sb = new StringBuffer();
+        s = sb.append("i ").append("am ").append("learning ").append("now.").toString();
+        //cost 51316 ns
+        logger.info("{},cost {} ns", s, System.nanoTime() - start);
     }
-    //'A(int)' is already defined
-    //public double A(int i){return i+0.0;}
 }
