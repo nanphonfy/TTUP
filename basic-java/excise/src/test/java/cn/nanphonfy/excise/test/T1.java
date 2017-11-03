@@ -195,17 +195,57 @@ public class T1 extends AbstractTest {
         logger.info("{},{}", Math.round(n0), Math.round(n1));//-1,-1
     }
 
+    /**
+     * String 类是 final 类型的(所有对象都是不可变对象)，不可继承、不能修改
+     * 为提高效率节省空间，应用StringBuffer类
+     * 优点:是只读的，多线程并发访问不会有任何问题。
+     * 缺点:每个不同的状态都要一个对象来代表，牺牲性能
+     */
     @Test
     public void StringTest(){
         long start = System.nanoTime();
+        //创建多个对象，放在字符串常量缓冲区
         String s = "i " + "am " + "learning " + "now.";
         //cost 12237 ns
         logger.info("{},cost {} ns", s, System.nanoTime() - start);
 
         start = System.nanoTime();
+        //对象可改变
         StringBuffer sb = new StringBuffer();
         s = sb.append("i ").append("am ").append("learning ").append("now.").toString();
         //cost 51316 ns
         logger.info("{},cost {} ns", s, System.nanoTime() - start);
+
+        //可能创建了1个或2个对象，"xyz"放在字符串常量缓冲区，若存在不创建，new 不管如何都创建一个新的String对象
+        String str = new String("xyz");
+    }
+
+    /**
+     * String覆盖了equals和 hashCode方法
+     * StringBuffer没覆盖equals和hashCode 方法(存储进 Java 集合类中时会出现问题)
+     */
+    @Test
+    public void StringAndStringBufferTest(){
+        //true，其重写了equals
+        logger.info("{}", new String("abc").equals(new String("abc")));
+        //false，因其没重写equals
+        logger.info("{}", new StringBuffer("abc").equals(new StringBuffer("abc")));
+
+
+        long start = System.nanoTime();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < 100; i++) {
+            sb.append(i);
+        }
+        //cost 97500 ns
+        logger.info("{},cost {} ns", sb.toString(), System.nanoTime() - start);
+
+        start = System.nanoTime();
+        String str = "";
+        for (int i = 0; i < 100; i++) {
+            str = str + i;
+        }
+        //cost 252238 ns
+        logger.info("{},cost {} ns", str, System.nanoTime() - start);
     }
 }
