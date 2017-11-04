@@ -2,8 +2,11 @@ package cn.nanphonfy.excise.test;
 
 import org.junit.Test;
 
+import java.util.StringTokenizer;
+
 /**
- * Created by nanphonfy(南风zsr) on 2017/10/28.
+ * @author nanphonfy(南风zsr)
+ * @date 2017/10/28.
  */
 public class T1 extends AbstractTest {
     @Test
@@ -204,7 +207,8 @@ public class T1 extends AbstractTest {
     @Test
     public void StringTest(){
         long start = System.nanoTime();
-        //创建多个对象，放在字符串常量缓冲区
+        //创建多个对象，放在字符串常量缓冲区(误区)
+        //实际上，字符串常量相加，javac会进行优化，直接把+去掉，然后进行拼接
         String s = "i " + "am " + "learning " + "now.";
         //cost 12237 ns
         logger.info("{},cost {} ns", s, System.nanoTime() - start);
@@ -243,9 +247,91 @@ public class T1 extends AbstractTest {
         start = System.nanoTime();
         String str = "";
         for (int i = 0; i < 100; i++) {
-            str = str + i;
+            str = str + i;//该处用对象的引用相加，会频繁创建对象（字符串常量池缓冲区）
         }
         //cost 252238 ns
         logger.info("{},cost {} ns", str, System.nanoTime() - start);
+    }
+
+    /**
+     * 如何把一段逗号分割的字符串转换成一个数组
+     */
+    @Test
+    public void arraySplitTest(){
+        String str = "i,want,to,study,.";
+        //return value.length;
+        //private final char value[];
+        str.length();
+        //正则表达式
+        String[] arr1 = str.split(",");
+        int size1 = arr1.length;
+
+        //StingTokenizer
+        StringTokenizer tokener = new StringTokenizer(str, ",");
+        String[] arr2 = new String[tokener.countTokens()];
+        int i = 0;
+        while (tokener.hasMoreElements()) {
+            arr2[i++] = tokener.nextToken();
+        }
+    }
+
+    /**
+     * javac编译可对字符串常量直接相加的表达式进行优化
+     * 不必等到运行期加法运算，而在编译时去掉其中的加号，直接将其编译成一个这些常量相连的结果
+     */
+    @Test
+    public void StringHasObjectTest(){
+        String s1 = "a";
+        String s2 = s1 + "b";
+        String s3 = "a" + "b";//只创建了一个对象
+        //false,true
+        logger.info("{},{}", s2 == "ab", s3 == "ab");
+    }
+
+    /**
+     * try {}里有一个 return 语句，finally {}里的code会不会被执行，什么时候被执行
+     * finally 中的代码比 return 和 break 语句后执行
+     */
+    @Test
+    public void tryReturnAndFinallyReturnTest(){
+        //true
+        logger.info("{}",tryFinallRreturn());
+    }
+
+    private boolean tryFinallRreturn(){
+        boolean flag = false;
+        try {
+            logger.info("try...");
+            //存在以下函数时，不会执行finally
+            //System.exit(1);
+            return flag;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            //在return之后会再执行finally
+            logger.info("finally...");
+            flag = true;
+            return flag;
+        }
+    }
+    /**
+     * final, finally, finalize的区别
+     */
+    @Test
+    public void finalFinallyFinalizeTest(){
+        //final用于声明属性（属性不可变）、方法（方法不可覆盖）和类（类不可继承）
+        //内部类要访问局部变量，局部变量必须定义成 final 类型，如下：
+        final int num=0;
+        class UserNum{
+            public void addNum(){
+                logger.info("{}",num);
+            }
+        }
+
+        //finally是异常处理语句结构的一部分，表示总是执行
+
+        //finalize是Object类的一个方法，垃圾收集器执行时会调用被回收对象的此方法
+        //可覆盖此方法提供垃圾收集时的其他资源回收，eg.关闭文件等
+        //JVM不保证此方法总被调用
     }
 }
