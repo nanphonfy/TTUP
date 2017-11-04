@@ -57,3 +57,67 @@ public double A(double i);
 
 - native方法
 >表示该方法要用另外一种依赖平台的编程语言实现的，eg.，FileOutputSteam类要硬件打交道，底层的实现用操作系统相关的api实现。若要用java调用别人写的c语言函数，无法直接调用的，需按java要求写一个c语言的函数，由这个c语言函数去调用别人的c语言函数。
+
+- 运行时异常VS一般异常
+>java编译器要求方法必须声明抛出可能发生的++非运行时异常++，并不要求必须声明抛出未被捕获的++运行时异常++（表示虚拟机的通常操作中可能遇到的异常，是一种常见的运行错误）
+
+- Error VS Exception
+>error表示恢复不是不可能的但很困难（严重问题，eg.内存溢出、线程死锁，要人工解决）   
+exception表示一种设计或实现问题，若程序运行正常，从不会发生的情况。
+
+- Java异常处理机制的简单原理和应用
+>从三个级别分析：虚拟机必须宕机、程序可死可不死，程序不该死的错误。
+>- 异常指java运行时（非编译）所发生的非正常情况或错误。
+>- java对异常进行了分类，所有异常的根类java.lang.Throwable，派生了Error（程序本身无法克服和恢复的一种严重问题，程序只有死的份，eg.内存溢出、线程死锁等系统问题）和Exception（程序还能够克服和恢复的问题）子类。
+>- Exception又分系统异常（开发人员考虑不周，软件本身缺陷导致，用户无法克服恢复，但还可以继续运行或让软件死掉，eg.数组越界、空指针异常、类转换异常等）和普通异常（运行环境的变化或异常导致，程序不应死掉，用户能克服，eg.网络断线、硬盘空间不够等）
+>- ①系统异常，即运行时异常（总是由虚拟机接管），可处理也可不处理，故编译器不强制用try..catch处理或用throws声明，unchecked 异常；
+②普通异常，编译器强制必须try..catch 处理或用throws声明抛给上层调用方法处理，checked 异常。
+
+- 最常见的5个runtime exception
+>所谓系统异常，就是可能在java虚拟机正常工作时抛出的异常，它们都是RuntimeException的子类，有NullPointerException（空指针）、ArrayIndexOutOfBoundsException（数组越界）、
+ClassCastException（类转换异常）、ArrayStoreException（数据存储异常，操作数组时类型不同）、BufferOverflowException（IO异常）。
+
+- java语言的异常处理
+>throws 捕获并向外抛出异常、throw 抛出异常、try catch 是内部捕获异常并做自定义处理finally 是无论是否有异常都会被处理，除非在finally前存在System.exit(int i)
+
+- stop()和suspend()方法为何不推荐使用
+>- stop不安全，它会解除由线程获取的所有锁定，且当对象处于一种不连贯状态，那么其他线程能在那种状态下检查和修改它们，很难查出问题所在。
+>- suspend()容易发生死锁，调用时目标线程会停下来，但却仍然持有在这之前获得的锁定。此时，其他任何线程都不能访问锁定的资源，除非被"挂起"的线程恢复运行。
+>- 应在自己的Thread类中置入一个标志（活动|挂起），若标志指出线程应挂起，便用 wait()命其进入等待状态。若标志指出线程应当恢复，则用一个notify()重新启动线程。
+
+- 同步VS异步
+>- 若数据将在线程间共享，eg.正在写的数据以后可能被另一个线程读，或正在读的数据可能已被另一个线程写过了，那么这些数据就是共享数据，必须进行同步存取。
+>- 当程序调用一个需花费很长时间执行的方法， 且不希望等待方法的返回时，就应使用异步编程，更有效率。
+
+- 同步的几种实现方法
+>分别是synchronized,wait 与 notify。
+>- wait():使一个线程处于等待状态，并且释放对象lock。
+>- sleep():使一个正在运行的线程处于睡眠状态(静态方法)，调用要捕捉InterruptedException(中断异常)异常。
+>- notify():唤醒一个处于等待状态的线程(在调用此方法时，并不能确切的唤醒，而是由JVM确定唤醒哪个线程，不按优先级)
+>- notifyAll():唤醒所有处入等待状态的线程(不是给所有唤醒线程一个对象锁，而是让它们竞争)
+
+- 线程进入synchronized方法后，其它线程是否可进入此对象的其它方法
+>①若其他方法都没加synchronized，则能；
+②若该方法内部调用了wait，则可进入其他synchronized方法；
+③若其他方法都加了synchronized，且该方法内部没调用wait，则不能；
+④若其他方法是static（同步锁是当前类的字节码），非静态方法（用的是this）。
+
+- 线程概念
+>一个程序中可有多条执行线索(线程)同时执行，每个线程都关联有要执行的代码，即可以有多段程序代码同时运行，每个程序至少有一个main方法的主线程。若只有单个cpu，宏观上，cpu一会执行a线索，一会执行b线索，切换时间很快，给人的感觉是a,b同时执行。
+
+- 线程的基本状态和状态关系
+>状态：就绪、运行、synchronize阻塞、wait（wait必须在synchronized内部调用）和sleep挂起、结束。
+```
+调用线程的start方法->就绪状态
+线程调度系统转为->运行状态
+遇到synchronized语句->阻塞
+当synchronized获得锁（该情况可调用wait转为挂起）->运行
+线程关联的代码执行完后->结束
+```
+
+- [Collection框架的结构](http://www.cnblogs.com/yadongliang/p/5351255.html)  
+>Collection
+>>**List：** ArrayList、LinkedList、Vector、Stack   
+**Set：** HashSet、TreeSet   
+**Map：** HashMap、HashTable、TreeMap、WeakHashMap
+
