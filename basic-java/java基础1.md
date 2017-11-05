@@ -121,3 +121,32 @@ ClassCastException（类转换异常）、ArrayStoreException（数据存储异�
 **Set：** HashSet、TreeSet   
 **Map：** HashMap、HashTable、TreeMap、WeakHashMap
 
+- ArrayList VS Vector
+>**共同点：** 都实现List（继承Collection接口）接口，都是有序集合（相当于动态数组，按位置索引号取元素），允许重复。  
+**异同点：** 
+>- ①同步性：Vector是线程安全的(java1)，方法间是线程同步的，若有多个线程访问集合，最好用它；ArrayList是线程不安全的(java2)，方法间是不同步的，效率高点，若只有一个线程访问，最好用它。
+>- ②数据增长：都有初始容量大小，存储空间满时会扩容，要在内存空间与程序效率间取得一定平衡。 他们都可设置初始大小，Vector还**可**设置增长空间大小，默认增长一倍，ArrayList**不可**设置增长大小，默认增长0.5倍。
+
+- HashMap VS Hashtable
+>**共同点：** HashMap是Hashtable的轻量级实现，都实现Map接口（java1.2引入），它们采用的hash/rehash算法大概一样，故性能差异不大。
+**异同点：**
+>- ①历史：Hashtable继承了陈旧的Dictionary类，HashMap把它的contains改成containsValue和containsKey；
+>- ②同步性：Hashtable的方法是synchronized的，而HashMap不是；
+>- ③值：只有HashMap运行null做为key或value，Hashtable会出现NullPointerException。
+
+- List VS Map
+>List是存储单列数据集合，存储的数据有顺序，允许重复；Map是存储键和值的双列数据的集合，键不能重，值可重。
+
+- List 、Map 、Set存取元素各有什么特点
+>List和Set都是单列元素的集合，都有共同的父接口Collection。
+>- Set不允许重复，当集合含有与某元素equals相等的元素时，add会返回false。遍历Set无法通过下标索引，只能以iterator接口取得所有元素，再逐一遍历各个元素。
+>- List有存储顺序，可插队（调用add(int index, E element)），在集合中用一个索引变量指向对象。遍历元素时除了 Iterator接口，也可通过get方法。
+>- Map与List和Set不同，它是双列集合，不能有重复key（也是按equals是否相等）。遍历：可通过keySet、entrySet使用iterator、entrySet、values等4种方法遍历。
+>>HashSet按hashcode值的某种运算方式进行存储，而不是直接按hashcode值的大小存储。LinkedHashSet按插入的顺序存储， 那被存储对象的hashcode还有什么作用呢？Hashset 集合比较两个对象是否相等，首先看hashcode是否相等，再看equals方法是否相等。
+
+- ArrayList、Vector、LinkedList的存储性能和特性
+>ArrayList和LinkedList都是线程不安全的，其中ArrayList和Vector使用数组存储数据，LinkedList（提供了一些方法，可被当做堆栈和队列）使用双向链表存储。前者可按序号索引元素，插入涉及内存移动操作，索引数据快插入数据慢,LinkedList按序号索引数据要向前或向后遍历，但插入数据很快。
+
+- Collection VS [Collections](http://blog.csdn.net/yangfeixien/article/details/40391771)
+>Collection是集合类的上级接口，Set和List都继承它；  
+Collections是针对集合类的一个帮助类，他提供一系列静态方法实现对各种集合的搜索、排序、线程安全化等操作。
