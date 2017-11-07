@@ -256,6 +256,7 @@ public class T1 extends AbstractTest {
         List<Pet> copy = new ArrayList<Pet>(pets);
         sub = Arrays.asList(pets.get(1), pets.get(4));
         //sub: [Mouse, Pug]
+        //取交集，行为依赖于equals方法
         print("sub: " + sub);
         copy.retainAll(sub);
         //13: [Mouse, Pug]
@@ -264,6 +265,7 @@ public class T1 extends AbstractTest {
         copy.remove(2); // Remove by index
         //14: [Rat, Mouse, Mutt, Pug, Cymric, Pug]
         print("14: " + copy);
+        //也依赖于equals方法
         copy.removeAll(sub); // Only removes exact objects
         //15: [Rat, Mutt, Cymric, Pug]
         print("15: " + copy);
@@ -289,6 +291,101 @@ public class T1 extends AbstractTest {
         Pet[] pa = pets.toArray(new Pet[0]);
         //23: 14
         print("23: " + pa[3].id());
+    }
+
+    /**
+     * 迭代器
+     * 容器缺点：面向确切类型编程。
+     * 迭代器（也是一种设计模式，通常被称为轻量级对象，创建代价小）可不关心容器的类型。
+     */
+    @Test
+    public void SimpleIterationTest(){
+        List<Pet> pets = Pets.arrayList(12);
+
+        //返回一个Iterator，将准备好返回序列的第一个元素
+        Iterator<Pet> it = pets.iterator();
+        //获得序列下一个元素
+        while (it.hasNext()) {
+            //检查序列中是否还有元素
+            Pet p = it.next();
+            System.out.print(p.id() + ":" + p + " ");
+        }
+        //0:Rat 1:Manx 2:Cymric 3:Mutt 4:Pug 5:Cymric 6:Pug 7:Manx 8:Cymric 9:Rat 10:EgyptianMau 11:Hamster
+        System.out.println();
+        // A simpler approach, when possible:
+        //若只向前遍历List，而不打算修改List本身，可用foreach（更简洁）
+        for (Pet p : pets) {
+            System.out.print(p.id() + ":" + p + " ");
+        }
+        //0:Rat 1:Manx 2:Cymric 3:Mutt 4:Pug 5:Cymric 6:Pug 7:Manx 8:Cymric 9:Rat 10:EgyptianMau 11:Hamster
+        System.out.println();
+        // An Iterator can also remove elements:
+        it = pets.iterator();
+        for (int i = 0; i < 6; i++) {
+            //在remove之前必须先调用next方法
+            it.next();
+            //将迭代器新返回的元素删除
+            it.remove();
+        }
+        //[Pug, Manx, Cymric, Rat, EgyptianMau, Hamster]
+        System.out.println(pets);
+    }
+
+    /**
+     * 迭代器统一了对容器的访问方式
+     * 创建display，不必知晓容器的确切类型
+     */
+    @Test
+    public void CrossContainerIterationTest(){
+        ArrayList<Pet> pets = Pets.arrayList(8);
+        LinkedList<Pet> petsLL = new LinkedList<>(pets);
+        HashSet<Pet> petsHS = new HashSet<>(pets);
+        TreeSet<Pet> petsTS = new TreeSet<>(pets);
+        //Iterator：能够将遍历序列的操作与序列底层结构分离
+        //0:Rat 1:Manx 2:Cymric 3:Mutt 4:Pug 5:Cymric 6:Pug 7:Manx
+        display(pets.iterator());
+        //0:Rat 1:Manx 2:Cymric 3:Mutt 4:Pug 5:Cymric 6:Pug 7:Manx
+        display(petsLL.iterator());
+        //0:Rat 1:Manx 2:Cymric 3:Mutt 4:Pug 5:Cymric 6:Pug 7:Manx
+        display(petsHS.iterator());
+        //5:Cymric 2:Cymric 7:Manx 1:Manx 3:Mutt 6:Pug 4:Pug 0:Rat
+        display(petsTS.iterator());
+    }
+
+    public static void display(Iterator<Pet> it) {
+        while (it.hasNext()) {
+            Pet p = it.next();
+            System.out.print(p.id() + ":" + p + " ");
+        }
+        System.out.println();
+    }
+
+    @Test
+    public void ListIterationTest(){
+        List<Pet> pets = Pets.arrayList(8);
+        ListIterator<Pet> it = pets.listIterator();
+        while (it.hasNext()) {
+            //可指向当前位置的前一个和后一个元素的索引
+            //Rat, 1, 0; Manx, 2, 1; Cymric, 3, 2; Mutt, 4, 3; Pug, 5, 4; Cymric, 6, 5; Pug, 7, 6; Manx, 8, 7;
+            System.out.print(it.next() + ", " + it.nextIndex() + ", " + it.previousIndex() + "; ");
+        }
+        System.out.println();
+        // Backwards:
+        while (it.hasPrevious()) {
+            //7 6 5 4 3 2 1 0
+            System.out.print(it.previous().id() + " ");
+        }
+        System.out.println();
+        //[Rat, Manx, Cymric, Mutt, Pug, Cymric, Pug, Manx]
+        System.out.println(pets);
+        it = pets.listIterator(3);
+        while (it.hasNext()) {
+            it.next();
+            //可用set替换它访问过的最后一个元素
+            it.set(Pets.randomPet());
+        }
+        //[Rat, Manx, Cymric, Cymric, Rat, EgyptianMau, Hamster, EgyptianMau]
+        System.out.println(pets);
     }
 
     @Test
