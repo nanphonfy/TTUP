@@ -388,6 +388,72 @@ public class T1 extends AbstractTest {
         System.out.println(pets);
     }
 
+    /**
+     * LinkedList还添加了可用做栈、队列、双端队列的方法
+     */
+    @Test
+    public void LinkedListFeatures(){
+        LinkedList<Pet> pets = new LinkedList<>(Pets.arrayList(5));
+        //[Rat, Manx, Cymric, Mutt, Pug]
+        print(pets);
+        // Identical:
+        /*
+        getFirst和element完全一样，都返回列表第一个元素，不移除，若空，则抛出NoSuchElementException
+        pets.getFirst(): Rat
+        pets.element(): Rat*/
+        print("pets.getFirst(): " + pets.getFirst());
+        print("pets.element(): " + pets.element());
+        // Only differs in empty-list behavior:
+        //列表空的时候，返回null
+        print("pets.peek(): " + pets.peek());
+        // Identical; remove and return the first element
+        /*完全一样，移除并返回列表的头，空时抛NoSuchElementException
+        pets.remove(): Rat
+        pets.removeFirst(): Manx*/
+        print("pets.remove(): " + pets.remove());
+        print("pets.removeFirst(): " + pets.removeFirst());
+        // Only differs in empty-list behavior:
+        /*列表空的时候，返回null
+        pets.poll(): Cymric*/
+        print("pets.poll(): " + pets.poll());
+        //[Mutt, Pug]
+        print(pets);
+
+        //addFirst插入列表头部
+        pets.addFirst(new Rat());
+        //After addFirst(): [Rat, Mutt, Pug]
+        print("After addFirst(): " + pets);
+        //offer、add和addLast一样，都是插入列表尾部
+        pets.offer(Pets.randomPet());
+        //After offer(): [Rat, Mutt, Pug, Cymric]
+        print("After offer(): " + pets);
+        pets.add(Pets.randomPet());
+        //After add(): [Rat, Mutt, Pug, Cymric, Pug]
+        print("After add(): " + pets);
+        pets.addLast(new Hamster());
+        //After addLast(): [Rat, Mutt, Pug, Cymric, Pug, Hamster]
+        print("After addLast(): " + pets);
+        //pets.removeLast(): Hamster
+        print("pets.removeLast(): " + pets.removeLast());
+    }
+
+    /**
+     * 栈，又称叠加栈，后进先出（LIFO）的容器
+     * LinkedList可直接作为栈使用
+     */
+    @Test
+    public void StackTestTest(){
+        //java.util的Stack，Stack<E> extends Vector<E>，是java1.0的产物，设计欠佳
+        //用LinkedList可产生更好的Stack
+        net.mindview.util.Stack<String> stack = new net.mindview.util.Stack<>();
+        for (String s : "My dog has fleas".split(" ")) {
+            stack.push(s);
+        }
+        while (!stack.empty()) {
+            System.out.print(stack.pop() + " ");
+        }
+    }
+
     @Test
     public void Test(){
 
