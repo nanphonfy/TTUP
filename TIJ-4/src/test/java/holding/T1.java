@@ -1,5 +1,6 @@
 package holding;
 
+import net.mindview.util.TextFile;
 import org.junit.Test;
 import typeinfo.pets.*;
 
@@ -452,6 +453,230 @@ public class T1 extends AbstractTest {
         while (!stack.empty()) {
             System.out.print(stack.pop() + " ");
         }
+    }
+
+    /**
+     * Set（就是Collection，继承和多态的典型应用：表现不同）不保存重复元素
+     * HashSet对快速查找进行优化
+     */
+    @Test
+    public void SetOfIntegerTest(){
+        Random rand = new Random(47);
+        //HashSet出于速度考虑，使用了散列函数
+        Set<Integer> intset = new HashSet<>();
+        for(int i = 0; i < 10000; i++) {
+            intset.add(rand.nextInt(30));
+        }
+        System.out.println(intset);
+    }
+
+    /**
+     * 将元素存储在红-黑树数据结构中，可对结果排序
+     */
+    @Test
+    public void SortedSetOfIntegerTest(){
+        Random rand = new Random(47);
+        SortedSet<Integer> intset = new TreeSet<>();
+        for(int i = 0; i < 10000; i++) {
+            intset.add(rand.nextInt(30));
+        }
+        //[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+        System.out.println(intset);
+    }
+
+    /**
+     * 使用contains测试Set的归属性
+     * eg.用圆表示集合与集合之间的关系
+     */
+    @Test
+    public void SetOperationsTest(){
+        Set<String> set1 = new HashSet<>();
+        Collections.addAll(set1,"A B C D E F G H I J K L".split(" "));
+        set1.add("M");
+        //H: true
+        print("H: " + set1.contains("H"));
+        //N: false
+        print("N: " + set1.contains("N"));
+        Set<String> set2 = new HashSet<>();
+        Collections.addAll(set2, "H I J K L".split(" "));
+        //set2 in set1: true
+        print("set2 in set1: " + set1.containsAll(set2));
+        set1.remove("H");
+        //set1: [A, B, C, D, E, F, G, I, J, K, L, M]
+        print("set1: " + set1);
+        //set2 in set1: false
+        print("set2 in set1: " + set1.containsAll(set2));
+        set1.removeAll(set2);
+        // [A, B, C, D, E, F, G, M]
+        print("set2 removed from set1: " + set1);
+        Collections.addAll(set1, "X Y Z".split(" "));
+        //'X Y Z' added to set1: [A, B, C, D, E, F, G, M, X, Y, Z]
+        print("'X Y Z' added to set1: " + set1);
+    }
+
+    /**
+     * 打开文件，列出其所含单词
+     */
+    @Test
+    public void UniqueWordsTest(){
+        //正则表达式，"\\W+"：一个或多个字母
+        //TreeSet按字典排序
+        Set<String> words = new TreeSet<>(new TextFile("pom.xml", "\\W+"));
+        //[0, 1, 12, 2001, 4, 6, 7, 8, POM, SNAPSHOT, TIJ4, UTF, XMLSchema, apache, artifactId, build, cn, code, compiler, configuration, dependencies, dependency, encoding, groupId, http, instance, junit, log4j12, maven, modelVersion, nanphonfy, org, plugin, plugins, project, properties, schemaLocation, scope, slf4j, source, target, test, version, w3, www, xml, xmlns, xsd, xsi]
+        System.out.println(words);
+    }
+
+    /**
+     * 想改为按字母序排序，可使用String.CASE_INSENSITIVE_ORDER比较器
+     */
+    @Test
+    public void UniqueWordsAlphabeticTest(){
+        Set<String> words = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        words.addAll(new TextFile("pom.xml", "\\W+"));
+        //[0, 1, 12, 2001, 4, 6, 7, 8, apache, artifactId, build, cn, code, compiler, configuration, dependencies, dependency, encoding, groupId, http, instance, junit, log4j12, maven, modelVersion, nanphonfy, org, plugin, plugins, POM, project, properties, schemaLocation, scope, slf4j, SNAPSHOT, source, target, test, TIJ4, UTF, version, w3, www, xml, xmlns, XMLSchema, xsd, xsi]
+        System.out.println(words);
+    }
+
+    /**
+     * 测试类的随机性
+     */
+    @Test
+    public void StatisticsTest(){
+        Random rand = new Random(47);
+        //HashMap自动包装机制，可使用Integer引用，不能使用基本类型
+        Map<Integer, Integer> m = new HashMap<>();
+        for (int i = 0; i < 10000; i++) {
+            // Produce a number between 0 and 20:
+            int r = rand.nextInt(20);
+            Integer freq = m.get(r);
+            m.put(r, freq == null ? 1 : freq + 1);
+        }
+        //{0=481, 1=502, 2=489, 3=508, 4=481, 5=503, 6=519, 7=471, 8=468, 9=549, 10=513, 11=531, 12=521, 13=506, 14=477, 15=497, 16=533, 17=509, 18=478, 19=464}
+        System.out.println(m);
+    }
+
+    /**
+     *containsKey和containsValue
+     */
+    @Test
+    public void PetMapTest(){
+        Map<String, Pet> petMap = new HashMap<>();
+        petMap.put("My Cat", new Cat("Molly"));
+        petMap.put("My Dog", new Dog("Ginger"));
+        petMap.put("My Hamster", new Hamster("Bosco"));
+        //{My Dog=Dog Ginger, My Cat=Cat Molly, My Hamster=Hamster Bosco}
+        print(petMap);
+        Pet dog = petMap.get("My Dog");
+        //Dog Ginger
+        print(dog);
+        //true
+        print(petMap.containsKey("My Dog"));
+        //true
+        print(petMap.containsValue(dog));
+    }
+
+    /**
+     * 组合容器，生成强大的数据结构
+     */
+    @Test
+    public void MapOfListTest(){
+        Map<Person, List<? extends Pet>> petPeople = new HashMap<>();
+
+        petPeople.put(new Person("Dawn"), Arrays.asList(new Cymric("Molly"), new Mutt("Spot")));
+        petPeople.put(new Person("Kate"),
+                Arrays.asList(new Cat("Shackleton"), new Cat("Elsie May"), new Dog("Margrett")));
+        petPeople.put(new Person("Marilyn"),
+                Arrays.asList(new Pug("Louie aka Louis Snorkelstein Dupree"), new Cat("Stanford aka Stinky el Negro"),new Cat("Pinkola")));
+        petPeople.put(new Person("Luke"), Arrays.asList(new Rat("Fuzzy"), new Rat("Fizzy")));
+        petPeople.put(new Person("Isaac"), Arrays.asList(new Rat("Freckly")));
+
+        //People: [Person Marilyn, Person Dawn, Person Luke, Person Isaac, Person Kate]
+        //返回它的键的Set
+        print("People: " + petPeople.keySet());
+        //Pets: [[Pug Louie aka Louis Snorkelstein Dupree, Cat Stanford aka Stinky el Negro, Cat Pinkola], [Cymric Molly, Mutt Spot], [Rat Fuzzy, Rat Fizzy], [Rat Freckly], [Cat Shackleton, Cat Elsie May, Dog Margrett]]
+        //返回它的值的Collection
+        print("Pets: " + petPeople.values());
+        for (Person person : petPeople.keySet()) {
+            print(person + " has:");
+            for (Pet pet : petPeople.get(person)) {
+                print("    " + pet);
+            }
+        }
+    }
+
+    /**
+     * 队列，先进先出（FIFO）的容器，在并发编程特别重要，它可安全将对象从一个任务传输给另一个任务
+     * LinkedList提供方法支持队列行为，实现了Queue接口，可作为Queue的一种实现
+     */
+    @Test
+    public void QueueDemoTest(){
+        //Queue接口窄化了对LinkedList方法的访问权限
+        Queue<Integer> queue = new LinkedList<>();
+        for(int i = 0; i < 10; i++) {
+            //offer：插入队尾或返回false；
+            queue.offer(i);
+        }
+        //0 1 2 3 4 5 6 7 8 9
+        printQ(queue);
+        Queue<Character> qc = new LinkedList<>();
+        for(char c : "Brontosaurus".toCharArray()) {
+            qc.offer(c);
+        }
+        //B r o n t o s a u r u s
+        printQ(qc);
+    }
+    public void printQ(Queue queue) {
+        //peek（空时返回null）和element（空时返回NoSuchElementException）都不移除的返回对头
+        while(queue.peek() != null) {
+            //poll（空时返回null）和remove（空时返回NoSuchElementException）移除并返回队头
+            System.out.print(queue.remove() + " ");
+        }
+        System.out.println();
+    }
+
+    /**
+     * 优先级队列（jdk1.5）来实现最高优先级的元素最优先处理，
+     * 当插入一个元素时，会在队列中被排序，默认自然排序
+     * （算法维护一个堆，移除时选择最重要的元素）
+     * 最小值拥有最高优先级
+     */
+    @Test
+    public void PriorityQueueDemoTest(){
+        PriorityQueue<Integer> priorityQueue =
+                new PriorityQueue<>();
+        Random rand = new Random(47);
+        for(int i = 0; i < 10; i++) {
+            priorityQueue.offer(rand.nextInt(i + 10));
+        }
+        //0 1 1 1 1 1 3 5 8 14
+        printQ(priorityQueue);
+
+        List<Integer> ints = Arrays.asList(25, 22, 20,18, 14, 9, 3, 1, 1, 2, 3, 9, 14, 18, 21, 23, 25);
+        priorityQueue = new PriorityQueue<>(ints);
+        //1 1 2 3 3 9 9 14 14 18 18 20 21 22 23 25 25
+        printQ(priorityQueue);
+        priorityQueue = new PriorityQueue<>(ints.size(), Collections.reverseOrder());
+        priorityQueue.addAll(ints);
+        //25 25 23 22 21 20 18 18 14 14 9 9 3 3 2 1 1
+        printQ(priorityQueue);
+
+        String fact = "EDUCATION SHOULD ESCHEW OBFUSCATION";
+        List<String> strings = Arrays.asList(fact.split(""));
+        PriorityQueue<String> stringPQ = new PriorityQueue<>(strings);
+        //      A A B C C C D D E E E F H H I I L N N O O O O S S S T T U U U W
+        printQ(stringPQ);
+        stringPQ = new PriorityQueue<>(strings.size(), Collections.reverseOrder());
+        stringPQ.addAll(strings);
+        //W U U U T T S S S O O O O N N L I I H H F E E E D D C C C B A A
+        printQ(stringPQ);
+
+        Set<Character> charSet = new HashSet<>();
+        for(char c : fact.toCharArray()) {
+            charSet.add(c); // Autoboxing
+        }
+        PriorityQueue<Character> characterPQ = new PriorityQueue<>(charSet);
+        //  A B C D E F H I L N O S T U W
+        printQ(characterPQ);
     }
 
     @Test
