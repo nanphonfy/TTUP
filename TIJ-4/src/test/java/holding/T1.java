@@ -1,5 +1,6 @@
 package holding;
 
+import net.mindview.util.ContainerMethodDifferences;
 import net.mindview.util.TextFile;
 import org.junit.Test;
 import typeinfo.pets.*;
@@ -679,9 +680,353 @@ public class T1 extends AbstractTest {
         printQ(characterPQ);
     }
 
+    /**
+     * Collection：描述所有序列容器的共性的根接口
+     * AbstractCollection<E> implements Collection<E>
+     * 使用接口：可创建更通用的代码
+     * Collection（更方便点，且可使用foreach，代码更清晰）和Iterator都可以实现解耦
+     */
     @Test
-    public void Test(){
+    public void InterfaceVsIteratorTest(){
+        List<Pet> petList = Pets.arrayList(8);
+        Set<Pet> petSet = new HashSet<>(petList);
+        Map<String, Pet> petMap = new LinkedHashMap<>();
+        String[] names = ("Ralph, Eric, Robin, Lacey, Britney, Sam, Spot, Fluffy").split(", ");
+        for (int i = 0; i < names.length; i++) {
+            petMap.put(names[i], petList.get(i));
+        }
+        System.out.println(petMap);
+        System.out.println(petMap.keySet());
+        //display(Collection<Pet> pets)
+        display(petMap.values());
+        display(petList);
+        display(petSet);
 
+        //display(Iterator<Pet> it)
+        display(petMap.values().iterator());
+        display(petList.iterator());
+        display(petSet.iterator());
+    }
+    public static void display(Collection<Pet> pets) {
+        for(Pet p : pets) {
+            System.out.print(p.id() + ":" + p + " ");
+        }
+        System.out.println();
+    }
+
+    @Test
+    public void CollectionSequenceTest(){
+        CollectionSequence c = new CollectionSequence();
+        display(c);
+        display(c.iterator());
+    }
+
+    /**
+     * 即使通过继承AbstractCollection，可得到Collection接口的默认实现，
+     * 但无论如何都要被强制实现没有实现的iterator和size方法
+     */
+    class CollectionSequence extends AbstractCollection<Pet> {
+        private Pet[] pets = Pets.createArray(8);
+
+        @Override public int size() {
+            return pets.length;
+        }
+
+        @Override public Iterator<Pet> iterator() {
+            return new Iterator<Pet>() {
+                private int index = 0;
+
+                @Override public boolean hasNext() {
+                    return index < pets.length;
+                }
+
+                @Override public Pet next() {
+                    return pets[index++];
+                }
+
+                //这里暂时不实现它
+                @Override public void remove() { // Not implemented
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
+    }
+
+    @Test
+    public void NonCollectionSequenceTest(){
+        NonCollectionSequence nc = new NonCollectionSequence();
+        display(nc.iterator());
+    }
+
+    class PetSequence {
+        protected Pet[] pets = Pets.createArray(8);
+    }
+
+    /**
+     * 若我们的类已经继承其他类，就不能再继承AbstractCollection了
+     * 要实现Collection，就必须实现接口所有方法
+     * 下面的方法可以简化实现
+     */
+    class NonCollectionSequence extends PetSequence {
+        public Iterator<Pet> iterator() {
+            return new Iterator<Pet>() {
+                private int index = 0;
+
+                public boolean hasNext() {
+                    return index < pets.length;
+                }
+
+                public Pet next() {
+                    return pets[index++];
+                }
+
+                public void remove() { // Not implemented
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
+    }
+
+    /**
+     * foreach主要用于数组（也可用于Collection对象）
+     */
+    @Test
+    public void ForEachCollectionsTest(){
+        Collection<String> cs = new LinkedList<>();
+        Collections.addAll(cs, "Take the long way home".split(" "));
+        for (String s : cs) {
+            System.out.print("'" + s + "' ");
+        }
+    }
+
+    /**
+     * Iterable（java1.5）接口:包含了产生iterator方法，
+     * 任何实现Iterable的类都可以使用foreach
+     */
+    @Test
+    public void IterableClassTest(){
+        for(String s : new IterableClass()) {
+            System.out.print(s + " ");
+        }
+    }
+
+    class IterableClass implements Iterable<String> {
+        protected String[] words = ("And that is how " + "we know the Earth to be banana-shaped.").split(" ");
+        /**
+         * iterator方法返回的是实现了Iterato<String>的匿名内部类的实例
+         */
+        @Override public Iterator<String> iterator() {
+            return new Iterator<String>() {
+                private int index = 0;
+
+                @Override public boolean hasNext() {
+                    return index < words.length;
+                }
+
+                @Override public String next() {
+                    return words[index++];
+                }
+
+                @Override public void remove() { // Not implemented
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
+    }
+
+    /**
+     * javaSE5，大量类都是Iterable类型，包括所有Collection类（不包括Map）
+     * 显示操作系统所有环境变量
+     */
+    @Test
+    public void EnvironmentVariablesTest(){
+        //entrySet因为产生一个Set（Iteralbe类型），所以可用foreach
+        for (Map.Entry entry : System.getenv().entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+
+    /**
+     * 不存在任何从数组到Iterable的自动转换，必须手动转换
+     */
+    @Test
+    public void ArrayIsNotIterableTest(){
+        test(Arrays.asList(1, 2, 3));
+        String[] strings = { "A", "B", "C" };
+        // 数组可以用foreach，但它不是Iterable类
+        // test(strings);
+        // 必须手动转换成Iterable:
+        test(Arrays.asList(strings));
+    }
+    private <T> void test(Iterable<T> ib) {
+        for(T t : ib) {
+            System.out.print(t + " ");
+        }
+    }
+
+    /**
+     * 适配器方法惯用法
+     * 适配器设计模式
+     * 在默认前向迭代器的基础上，添加反向迭代器的能力（不能覆盖，因为覆盖只能替换现有方法，不能选择实现）
+     */
+    @Test
+    public void AdapterMethodIdiomTest(){
+        ReversibleArrayList<String> ral = new ReversibleArrayList<>(Arrays.asList("To be or not to be".split(" ")));
+        // Grabs the ordinary iterator via iterator():
+        for (String s : ral) {
+            System.out.print(s + " ");
+        }
+        System.out.println();
+        // Hand it the Iterable of your choice
+        for (String s : ral.reversed()) {
+            System.out.print(s + " ");
+        }
+    }
+
+    class ReversibleArrayList<T> extends ArrayList<T> {
+        public ReversibleArrayList(Collection<T> c) { super(c); }
+        public Iterable<T> reversed() {
+            return new Iterable<T>() {
+                @Override public Iterator<T> iterator() {
+                    return new Iterator<T>() {
+                        int current = size() - 1;
+                        @Override public boolean hasNext() { return current > -1; }
+                        @Override public T next() { return get(current--); }
+                        @Override public void remove() { // Not implemented
+                            throw new UnsupportedOperationException();
+                        }
+                    };
+                }
+            };
+        }
+    }
+
+    /**
+     *添加两个适配器
+     *
+     */
+    @Test
+    public void MultiIterableClassTest(){
+        MultiIterableClass mic = new MultiIterableClass();
+        //banana-shaped. be to Earth the know we how is that And
+        for(String s : mic.reversed()) {
+            System.out.print(s + " ");
+        }
+        System.out.println();
+        //is banana-shaped. Earth that how the be And we know to
+        for(String s : mic.randomized()) {
+            System.out.print(s + " ");
+        }
+        System.out.println();
+        //And that is how we know the Earth to be banana-shaped.
+        for(String s : mic) {
+            System.out.print(s + " ");
+        }
+    }
+    class MultiIterableClass extends IterableClass {
+        public Iterable<String> reversed() {
+            return new Iterable<String>() {
+                public Iterator<String> iterator() {
+                    return new Iterator<String>() {
+                        int current = words.length - 1;
+
+                        public boolean hasNext() {
+                            return current > -1;
+                        }
+
+                        public String next() {
+                            return words[current--];
+                        }
+
+                        public void remove() { // Not implemented
+                            throw new UnsupportedOperationException();
+                        }
+                    };
+                }
+            };
+        }
+
+        //没有创建自己的Iterator，而是直接返回被打乱的List中的Iterator
+        public Iterable<String> randomized() {
+            return new Iterable<String>() {
+                public Iterator<String> iterator() {
+                    List<String> shuffled = new ArrayList<>(Arrays.asList(words));
+                    //Collections.shuffle没有影响原来的数组，只是打乱了shuffled中的引用
+                    //如果Arrays.asList(words)被打乱了，就会修改底层的数组
+                    Collections.shuffle(shuffled, new Random(47));
+                    return shuffled.iterator();
+                }
+            };
+        }
+    }
+
+    @Test
+    public void ModifyingArraysAsListTest(){
+        Random rand = new Random(47);
+        Integer[] ia = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        //不想原来的数组被修改，就应该创建副本
+        List<Integer> list1 = new ArrayList<>(Arrays.asList(ia));
+        //Before shuffling: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        System.out.println("Before shuffling: " + list1);
+        Collections.shuffle(list1, rand);
+        //After shuffling: [4, 6, 3, 1, 8, 7, 2, 5, 10, 9]
+        System.out.println("After shuffling: " + list1);
+        //array: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        System.out.println("array: " + Arrays.toString(ia));
+
+        //直接引用，会修改数组的结果
+        List<Integer> list2 = Arrays.asList(ia);
+        //Before shuffling: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        System.out.println("Before shuffling: " + list2);
+        Collections.shuffle(list2, rand);
+        //After shuffling: [9, 1, 6, 3, 7, 2, 5, 10, 4, 8]
+        System.out.println("After shuffling: " + list2);
+        //array: [9, 1, 6, 3, 7, 2, 5, 10, 4, 8]
+        System.out.println("array: " + Arrays.toString(ia));
+    }
+
+    /**
+     * 每个类或接口所实现的接口
+     * 其实有4个容器：List、Set、Queue、Map
+     * 除TreeSet之外，所有Set都拥有和Collection完全一样的接口
+     * List和Collection存在明显的不同
+     * Queue接口中的方法都是独立的
+     * ArrayList有RandomAccess，为动态修改算法提供信息
+     * Map和Collection间唯一重叠就是Map可以使用entrySet和values来产生Collection
+     */
+    @Test
+    public void ContainerMethodsTest(){
+        String[] args=new String[0];
+        ContainerMethodDifferences.main(args);
+        /*Collection: [add, addAll, clear, contains, containsAll, equals, forEach, hashCode, isEmpty, iterator, parallelStream, remove, removeAll, removeIf, retainAll, size, spliterator, stream, toArray]
+        Interfaces in Collection: [Iterable]
+        Set extends Collection, adds: []
+        Interfaces in Set: [Collection]
+        HashSet extends Set, adds: []
+        Interfaces in HashSet: [Set, Cloneable, Serializable]
+        LinkedHashSet extends HashSet, adds: []
+        Interfaces in LinkedHashSet: [Set, Cloneable, Serializable]
+        TreeSet extends Set, adds: [headSet, descendingIterator, descendingSet, pollLast, subSet, floor, tailSet, ceiling, last, lower, comparator, pollFirst, first, higher]
+        Interfaces in TreeSet: [NavigableSet, Cloneable, Serializable]
+        List extends Collection, adds: [replaceAll, get, indexOf, subList, set, sort, lastIndexOf, listIterator]
+        Interfaces in List: [Collection]
+        ArrayList extends List, adds: [trimToSize, ensureCapacity]
+        Interfaces in ArrayList: [List, RandomAccess, Cloneable, Serializable]
+        LinkedList extends List, adds: [offerFirst, poll, getLast, offer, getFirst, removeFirst, element, removeLastOccurrence, peekFirst, peekLast, push, pollFirst, removeFirstOccurrence, descendingIterator, pollLast, removeLast, pop, addLast, peek, offerLast, addFirst]
+        Interfaces in LinkedList: [List, Deque, Cloneable, Serializable]
+        Queue extends Collection, adds: [poll, peek, offer, element]
+        Interfaces in Queue: [Collection]
+        PriorityQueue extends Queue, adds: [comparator]
+        Interfaces in PriorityQueue: [Serializable]
+        Map: [clear, compute, computeIfAbsent, computeIfPresent, containsKey, containsValue, entrySet, equals, forEach, get, getOrDefault, hashCode, isEmpty, keySet, merge, put, putAll, putIfAbsent, remove, replace, replaceAll, size, values]
+        HashMap extends Map, adds: []
+        Interfaces in HashMap: [Map, Cloneable, Serializable]
+        LinkedHashMap extends HashMap, adds: []
+        Interfaces in LinkedHashMap: [Map]
+        SortedMap extends Map, adds: [lastKey, subMap, comparator, firstKey, headMap, tailMap]
+        Interfaces in SortedMap: [Map]
+        TreeMap extends Map, adds: [descendingKeySet, navigableKeySet, higherEntry, higherKey, floorKey, subMap, ceilingKey, pollLastEntry, firstKey, lowerKey, headMap, tailMap, lowerEntry, ceilingEntry, descendingMap, pollFirstEntry, lastKey, firstEntry, floorEntry, comparator, lastEntry]
+        Interfaces in TreeMap: [NavigableMap, Cloneable, Serializable]*/
     }
 }
 
@@ -708,4 +1053,3 @@ class Light extends Powder {}
 class Heavy extends Powder {}
 class Crusty extends Snow {}
 class Slush extends Snow {}
-
