@@ -11,6 +11,7 @@ import static innerclasses.MultiInterfaces.takesA;
 import static innerclasses.MultiInterfaces.takesB;
 import static innerclasses.Parcel11.contents;
 import static innerclasses.Parcel11.destination;
+import static net.mindview.util.Print.print;
 
 /**
  * 内部类：可将一个类的定义放在另一个类的定义内部
@@ -376,6 +377,80 @@ public class T10 {
         Event[] eventList = { gc.new ThermostatNight(0), gc.new LightOn(200), gc.new LightOff(400), gc.new WaterOn(600),gc.new WaterOff(800), gc.new ThermostatDay(1400) };
         gc.addEvent(gc.new Restart(2000, eventList));
         gc.run();
+    }
+
+    /**
+     * 【内部类的继承】
+     * 内部类的构造器必须连接到指向其外围类对象的引用，所以在继承内部类时，那个指向外围类对象的"秘密"的引用必须被初始化
+     * 要解决这个问题，必须使用特殊的语法明确说明他们之间的关联
+     */
+    @Test
+    public void InheritInnerTest(){
+        WithInner wi = new WithInner();
+        InheritInner ii = new InheritInner(wi);
+    }
+
+    /**
+     * 【内部类的覆盖】
+     * 创建了一个内部类，然后继承其外围类并重新定义此内部类，
+     * 但是"覆盖"内部类就好像它是外围类的一个方法，其实不起作用。
+     */
+    @Test
+    public void BigEggTest(){
+        //New Egg()
+        //Egg.Yolk()
+        new BigEgg();
+    }
+
+    /**
+     * 明确指出继承哪个内部类是可以的
+     */
+    @Test
+    public void BigEgg2Test(){
+        /*Egg2.Yolk()
+        New Egg2()
+        Egg2.Yolk()
+        BigEgg2.Yolk()*/
+        Egg2 e2 = new BigEgg2();
+        //BigEgg2.Yolk.f()
+        e2.g();
+    }
+
+    /**
+     * 【局部内部类】
+     * 局部内部类不能有访问说明符，它可以访问当前代码块内的常量+此外围类的所有成员。
+     * 局部内部类VS匿名内部类
+     * 局部内部类的名字在方法外不可见，仍要使用它的原因是：
+     * 需要一个已命名的构造器，或需重载构造器（需要不止一个该内部类）
+     * 而匿名内部类只能用于实例初始化。
+     */
+    @Test
+    public void LocalInnerClassTest(){
+        LocalInnerClass lic = new LocalInnerClass();
+        Counter c1 = lic.getCounter("Local inner "),
+                c2 = lic.getCounter2("Anonymous inner ");
+        for (int i = 0; i < 5; i++) {
+            print(c1.next());
+        }
+        for (int i = 0; i < 5; i++) {
+            print(c2.next());
+        }
+    }
+
+    /**
+     *【内部类标识符】
+     * 类文件的命名规则：外围类名字+'$'+内部类名字
+     */
+    @Test
+    public void LocalInnerClass$Test(){
+        /**
+         * 若内部类是匿名的，编译器会简单产生一个数字做为其标识符
+         * 若内部类是嵌套在别的内部类中，只需直接将他们的名字……
+         */
+        //Counter.class
+        //LocalInnerClass$1.class
+        //LocalInnerClass$1LocalCounter.class
+        //LocalInnerClass.class
     }
 
     /**
