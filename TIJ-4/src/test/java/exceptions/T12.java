@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static exceptions.FullConstructors.f;
 import static exceptions.FullConstructors.g;
+import static exceptions.LoggingExceptions2.logException;
 
 /**
  * 编译期间并不能找出所有错误，余下时间必须在运行期间解决。
@@ -73,6 +74,44 @@ public class T12 {
         } catch (MyException e) {
             e.printStackTrace(System.out);
         }
+    }
+
+    /**
+     * 欲获取异常抛出处的栈轨迹，但printStackTrace默认不产生字符串，所以我们需要重载printStackTrace，接受PrintWriter对象做为参数
+     */
+    @Test
+    public void LoggingExceptionsTest(){
+        try {
+            throw new LoggingException();
+        } catch (LoggingException e) {
+            System.err.println("Caught " + e);
+        }
+        try {
+            throw new LoggingException();
+        } catch (LoggingException e) {
+            System.err.println("Caught " + e);
+        }
+    }
+
+    /**
+     * 更常见的是，需捕获和记录其他人编写的异常
+     */
+    @Test
+    public void LoggingExceptions2Test(){
+        try {
+            throw new NullPointerException();
+        } catch (NullPointerException e) {
+            logException(e);
+        }
+    }
+
+    /**
+     * 还可进一步自定义异常，加入额外的构造器和成员
+     * 覆盖了Throwable.getMessage方法，以产生更详细的信息，有点类似toString
+     */
+    @Test
+    public void MyException2Test(){
+
     }
 
     /**

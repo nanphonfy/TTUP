@@ -25,6 +25,7 @@ public class FullConstructors {
         try {
             f();
         } catch (MyException e) {
+            //把抛出的异常信息发送到System.out，使用默认的e.printStackTrace，将被输出到标准错误流
             e.printStackTrace(System.out);
         }
         try {
