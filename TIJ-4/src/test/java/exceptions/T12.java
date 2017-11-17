@@ -5,6 +5,7 @@ import org.junit.Test;
 import static exceptions.FullConstructors.f;
 import static exceptions.FullConstructors.g;
 import static exceptions.LoggingExceptions2.logException;
+import static net.mindview.util.Print.print;
 
 /**
  * 编译期间并不能找出所有错误，余下时间必须在运行期间解决。
@@ -120,8 +121,41 @@ public class T12 {
 
      【捕获所有异常】
      可以只写一个异常处理程序捕获所有类型的异常（最好放在处理程序的末尾，防止抢先把异常捕获了）
+
+     Exception（Exception extends Throwable）是所有异常类的基类，获取详细信息：getMessage()、getLocalizedMessage()、toString()
+
+     打印Throwable和其调用栈（带到抛出地点）轨迹：printStackTrace()、printStackTrace(PrintStream s)、void printStackTrace(PrintStreamOrWriter s)
+
+     在Throwable对象的内部记录栈帧的当前状态：Throwable fillInStackTrace()
+
+     也可使用Throwable从基类Object继承的方法：getClass、getName、getSimpleName
      */
 
+    /**
+     * 每个方法都比前一个提供更多信息（每一个都是前一个的超集）
+     */
+    @Test
+    public void ExceptionMethodsTest(){
+        /**
+         * Caught Exception
+         getMessage():My Exception
+         getLocalizedMessage():My Exception
+         toString():java.lang.Exception: My Exception
+         printStackTrace():
+         java.lang.Exception: My Exception
+         at exceptions.T12.ExceptionMethodsTest(T12.java:140)
+         */
+        try {
+            throw new Exception("My Exception");
+        } catch (Exception e) {
+            print("Caught Exception");
+            print("getMessage():" + e.getMessage());
+            print("getLocalizedMessage():" + e.getLocalizedMessage());
+            print("toString():" + e);
+            print("printStackTrace():");
+            e.printStackTrace(System.out);
+        }
+    }
     /**
      *
      */
