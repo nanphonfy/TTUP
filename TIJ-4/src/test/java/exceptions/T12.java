@@ -5,7 +5,6 @@ import org.junit.Test;
 import static exceptions.FullConstructors.f;
 import static exceptions.FullConstructors.g;
 import static exceptions.LoggingExceptions2.logException;
-import static net.mindview.util.Print.print;
 
 /**
  * 编译期间并不能找出所有错误，余下时间必须在运行期间解决。
@@ -145,7 +144,7 @@ public class T12 {
          java.lang.Exception: My Exception
          at exceptions.T12.ExceptionMethodsTest(T12.java:140)
          */
-        try {
+        /*try {
             throw new Exception("My Exception");
         } catch (Exception e) {
             print("Caught Exception");
@@ -154,8 +153,134 @@ public class T12 {
             print("toString():" + e);
             print("printStackTrace():");
             e.printStackTrace(System.out);
+        }*/
+    }
+
+    /**
+     * 【栈轨迹】
+     * printStackTrace提供的信息，可通过getStackTrace访问（栈轨迹中的元素构成的数组，每个元素都是栈中的一帧）
+     * 只打印了方法名，还可打印整个StackTraceElement
+     */
+    @Test
+    public void WhoCalledTest(){
+        /*f(exceptions.WhoCalled.f(WhoCalled.java:9))
+        main(exceptions.WhoCalled.main(WhoCalled.java:27))
+        invoke0(sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method))
+        invoke(sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62))
+        invoke(sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43))
+        invoke(java.lang.reflect.Method.invoke(Method.java:497))
+        main(com.intellij.rt.execution.application.AppMain.main(AppMain.java:144))
+        --------------------------------
+        f(exceptions.WhoCalled.f(WhoCalled.java:9))
+        g(exceptions.WhoCalled.g(WhoCalled.java:19))
+        main(exceptions.WhoCalled.main(WhoCalled.java:29))
+        invoke0(sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method))
+        invoke(sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62))
+        invoke(sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43))
+        invoke(java.lang.reflect.Method.invoke(Method.java:497))
+        main(com.intellij.rt.execution.application.AppMain.main(AppMain.java:144))
+        --------------------------------
+        f(exceptions.WhoCalled.f(WhoCalled.java:9))
+        g(exceptions.WhoCalled.g(WhoCalled.java:19))
+        h(exceptions.WhoCalled.h(WhoCalled.java:23))
+        main(exceptions.WhoCalled.main(WhoCalled.java:31))
+        invoke0(sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method))
+        invoke(sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62))
+        invoke(sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43))
+        invoke(java.lang.reflect.Method.invoke(Method.java:497))
+        main(com.intellij.rt.execution.application.AppMain.main(AppMain.java:144))*/
+    }
+
+    /**
+     * 【重新抛出异常】
+     * 把刚捕获的异常重新抛出，高一级环境可以得到这个异常对象的所有信息，
+     * catch (Exception e) {
+     * System.out.println("...");
+     * throw e;
+     * }
+     * printStackTrace并非重新抛出点的信息
+     * fillInStackTrace会更新信息，高一级捕获到该对象
+     */
+    @Test
+    public void RethrowingTest(){
+
+    }
+
+    /**
+     * 在捕获异常后抛出另外一种异常，将得到类似fillInStackTrace的效果
+     * 有关原来异常发生点信息丢失，剩下与新抛出点有关信息
+     */
+    @Test
+    public void RethrowNewTest(){
+
+    }
+
+    /**
+     * Throwable子类中，提供带cause参数的构造器的有：Error、Exception、RuntimeException。
+     * 其他类型的异常要链接起来，应该使用initCause而不是构造器
+     * getField(String id) throws NoSuchFieldException
+     */
+    @Test
+    public void DynamicFieldsTest(){
+        /*try {
+            //从setField方法内抛出，视为编程错误，把NoSuchFieldException转成RuntimeException抛出
+            result = getField(id); // Get old value
+        } catch (NoSuchFieldException e) {
+            // Use constructor that takes "cause":
+            throw new RuntimeException(e);
+        }*/
+    }
+
+    /**
+     * 【java标准异常】
+     Throwable对象可分为两种类型（指继承Throwable的类型）：
+     Error（编译时和系统错误，特殊情况下才关心）和Exception（java类库、用户方法、运行时故障都可能会抛出，程序员所关心的）
+     */
+
+    /**
+     * "RuntimeException"
+     * 运行时异常（继承RuntimeException类），会自动被JVM抛出。
+     * 构成了一组具有相同特征和行为的异常类型，不需抛出RuntimeException的类型（不受检查异常，将自动捕获，无需亲自动手）
+     * 但还可在代码中手动抛出RuntimeException类型的异常
+     */
+    @Test
+    public void NeverCaughtTest(){
+        /**
+         * 如果RuntimeException没被捕获，直达main，那程序退出前将调用异常的printStackTrace方法
+         * RuntimeException代表编程错误：①无法预料的错误（eg.null引用）；②程序员应在代码检查错误。
+         */
+        /*Exception in thread "main" java.lang.RuntimeException: From f()
+        at exceptions.NeverCaught.f(NeverCaught.java:8)
+        at exceptions.NeverCaught.g(NeverCaught.java:12)
+        at exceptions.NeverCaught.main(NeverCaught.java:16)*/
+    }
+
+    /**
+     * 【使用finally清理】
+     * 对于一些代码，希望无论try块的异常是否抛出，都能得到执行
+     * 末尾加上finally子句，无论异常是否抛出，总能运行
+     */
+    @Test
+    public void FinallyWorksTest(){
+        int count=0;
+        while (true) {
+            try {
+                // Post-increment is zero first time:
+                if (count++ == 0) {
+                    throw new ThreeException();
+                }
+                System.out.println("No exception");
+            } catch (ThreeException e) {
+                System.out.println("ThreeException");
+            } finally {
+                System.out.println("In finally clause");
+                if (count == 2) {
+                    break; // out of "while"
+                }
+            }
         }
     }
+
     /**
      *
      */
