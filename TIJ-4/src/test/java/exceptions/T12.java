@@ -5,6 +5,7 @@ import org.junit.Test;
 import static exceptions.FullConstructors.f;
 import static exceptions.FullConstructors.g;
 import static exceptions.LoggingExceptions2.logException;
+import static net.mindview.util.Print.print;
 
 /**
  * 编译期间并不能找出所有错误，余下时间必须在运行期间解决。
@@ -279,6 +280,160 @@ public class T12 {
                 }
             }
         }
+    }
+
+    /**
+     * 【finally用来做什么】
+     * 当要把除内存外的资源恢复到他们的初始状态时，就要用finally子句（eg.已打开文件或网络连接）
+     * 目的：确保main结束时开关必须为关闭（当异常被抛出，但没被处理程序捕获，这时sw.off就得不到调用）
+     */
+    @Test
+    public void OnOffSwitchTest(){
+        /*try {
+            sw.on();
+            // Code that can throw exceptions...
+            f();
+            sw.off();
+        } catch (OnOffException1 e) {
+            System.out.println("OnOffException1");
+            sw.off();
+        } catch (OnOffException2 e) {
+            System.out.println("OnOffException2");
+            sw.off();
+        }*/
+    }
+
+    /**
+     * 使用finally，能够确保在任何情况下都能得到执行
+     */
+    @Test
+    public void WithFinallyTest(){
+        /*try {
+            sw.on();
+            // Code that can throw exceptions...
+            OnOffSwitch.f();
+        } catch (OnOffException1 e) {
+            System.out.println("OnOffException1");
+        } catch (OnOffException2 e) {
+            System.out.println("OnOffException2");
+        } finally {
+            sw.off();
+        }*/
+    }
+
+    /**
+     * 在异常没被当前异常处理程序捕获下，会在跳到更高一层的异常处理程序之前，执行finally子句
+     * 当涉及break和continue时，finally子句也会得到执行
+     */
+    @Test
+    public void AlwaysFinallyTest(){
+        /*Entering first try block
+        Entering second try block
+        finally in 2nd try block
+        Caught FourException in 1st try block
+        finally in 1st try block*/
+        print("Entering first try block");
+        try {
+            print("Entering second try block");
+            try {
+                throw new FourException();
+            } finally {
+                print("finally in 2nd try block");
+            }
+        } catch (FourException e) {
+            System.out.println("Caught FourException in 1st try block");
+        } finally {
+            System.out.println("finally in 1st try block");
+        }
+    }
+
+    /**
+     * 【在return中使用finally】
+     * finally总会被执行，可保证重要的清理工作仍旧会执行
+     */
+    @Test
+    public void MultipleReturnsTest(){
+
+    }
+
+    /**
+     * 【遗憾：异常丢失】
+     * java异常实现也有瑕疵，它还是有可能被轻易忽略
+     * VeryImportantException不见了，被finally的HoHumException所取代（相当严重的缺陷）
+     */
+    @Test
+    public void LostMessageTest(){
+
+    }
+
+    /**
+     * 即使抛出异常，也不会有任何输出
+     */
+    @Test
+    public void ExceptionSilencerTest(){
+        try {
+            throw new RuntimeException();
+        } finally {
+            // Using 'return' inside the finally block
+            // will silence any thrown exception.
+            return;
+        }
+    }
+
+    /**
+     * 【异常的限制】
+     * 在Inning类，构造器和event都声明将抛出异常，但实际上没有抛（强制用户去捕获可能在覆盖后的event版本中增加的异常）
+     *
+     * 不能基于异常说明来重载方法（基类的异常不一定会出现在派生类的方法的异常说明里，因为异常说明本身不属于方法类型的一部分），
+     * 这点同继承的规则明显不同
+     */
+    @Test
+    public void StormyInningTest(){
+
+    }
+
+    /**
+     * 【构造器】
+     * 构造器会把对象设置成安全初始状态（eg.打开一个文件，只有对象使用完且调用特殊清理方法后才能被清理）
+     * 在构造器内抛出异常，这些清理工作也许就不能正常工作（也许该对象某些部分还没被成功创建，而finally却要被清理），意味着在编写构造器时要格外细心。
+     */
+    @Test
+    public void InputFileTest(){
+
+    }
+
+    /**
+     * 构造阶段可能抛异常且要求清理，最安全的方式：使用嵌套try子句
+     */
+    @Test
+    public void CleanupTest(){
+        try {
+            InputFile in = new InputFile("Cleanup.java");
+            try {
+                String s;
+                int i = 1;
+                while ((s = in.getLine()) != null) {
+                    ; // Perform line-by-line processing here...
+                }
+            } catch (Exception e) {
+                System.out.println("Caught Exception in main");
+                e.printStackTrace(System.out);
+            } finally {
+                in.dispose();
+            }
+        } catch (Exception e) {
+            System.out.println("InputFile construction failed");
+        }
+    }
+
+    /**
+     * 为了构造和清理，可把不能失败的构造器的对象群组在一起
+     * 如何处理那些具有可失败的构造器，且需清理的对象
+     * 对每个构造，都必须包含在其自己的try-finally语句块中，且每个对象构造都必须跟随一个try-finally语句块确保清理
+     */
+    @Test
+    public void CleanupIdiomTest(){
+
     }
 
     /**
