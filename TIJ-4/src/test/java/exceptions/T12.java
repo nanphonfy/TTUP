@@ -437,6 +437,14 @@ public class T12 {
     }
 
     /**
+     * 抛出异常，会按照代码顺序找出最近的处理程序，匹配后认为异常得到处理
+     */
+    @Test
+    public void HumanTest(){
+
+    }
+
+    /**
      *
      */
     @Test
