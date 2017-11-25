@@ -1,7 +1,13 @@
 package generics;
 
+import generics.coffee.Coffee;
+import generics.coffee.CoffeeGenerator;
+import net.mindview.util.Generator;
+import net.mindview.util.New;
 import net.mindview.util.ThreeTuple;
 import net.mindview.util.TwoTuple;
+
+import java.util.*;
 
 /**
  * @author nanphonfy(南风zsr)
@@ -68,6 +74,83 @@ public class T15 {
      */
     public void LinkedStackTest(){
 
+    }
+
+    /**
+     * 持有特定类型对象的列表，可应用于各种类型的对象的工具
+     */
+    public void RandomListTest(){
+        RandomList<String> rs = new RandomList<>();
+        for (String s : ("The quick brown fox jumped over the lazy brown dog").split(" ")) {
+            rs.add(s);
+        }
+        for (int i = 0; i < 11; i++) {
+            System.out.print(rs.select() + " ");
+        }
+    }
+
+    /**
+     * 【泛型接口】
+     * eg.生成器：一种专门负责创建对象的类（工厂方法设计模式的一种应用）
+     * 工厂方法一般需要参数，而它不需要，就可创建对象
+     * （接口使用泛型与类使用泛型没区别）
+     * 实现Generator<Coffee>接口，能够随机生成不同类型的Coffee对象
+     * 参数化的Generator<Coffee>接口确保next返回值是参数的类型
+     * 实现Iterable接口，可在循环语句使用
+     */
+    public void CoffeeGeneratorTest(){
+        Generator generator;
+        CoffeeGenerator gen = new CoffeeGenerator();
+        for (int i = 0; i < 5; i++) {
+            System.out.println(gen.next());
+        }
+        for (Coffee c : new CoffeeGenerator(5)) {
+            System.out.println(c);
+        }
+    }
+
+    /**
+     * Fibonacci类里里外外都是使用int，但类型参数却是Integer
+     * 泛型局限性：基本类型无法作为类型参数
+     */
+    public void FibonacciTest(){
+
+    }
+
+    /**
+     * 有多种方法可实现适配器（eg.通过继承创建适配器类）
+     * 要在类的循环语句使用IterableFibonacci，必须向IterableFibonacci构造器提供一个边界值，才能知道haseNext何时返回false
+     */
+    public void IterableFibonacciTest(){
+        for (int i : new IterableFibonacci(18)) {
+            System.out.print(i + " ");
+        }
+    }
+
+    /**
+     * 【泛型方法】
+     * 是否拥有泛型方法，与其所在类是否泛型没关系
+     * 指导原则：若泛型方法可取代整个类的泛型化，就该只使用泛型方法
+     * static方法要使用泛型能力，就必须使其成为泛型方法
+     * 编译器进行类型参数推断
+     */
+    public void GenericMethodsTest(){
+        /*public <T> void f(T x) {
+            System.out.println(x.getClass().getName());
+        }*/
+    }
+
+    /**
+     * 【利用类型参数推断】
+     * 编写工具类，包含static，专门用来创建各种常用的容器对象
+     * 类型参数推断避免了重复的泛型参数列表
+     */
+    public void NewTest(){
+        Map<String, List<String>> sls = New.map();
+        List<String> ls = New.list();
+        LinkedList<String> lls = New.lList();
+        Set<String> ss = New.set();
+        Queue<String> qs = New.queue();
     }
 
     /**
