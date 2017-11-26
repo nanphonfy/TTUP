@@ -28,10 +28,10 @@ public class New {
 
     // Examples:
     public static void main(String[] args) {
-        Map<String, List<String>> sls = New.map();
+        /*Map<String, List<String>> sls = New.map();
         List<String> ls = New.list();
         LinkedList<String> lls = New.lList();
         Set<String> ss = New.set();
-        Queue<String> qs = New.queue();
+        Queue<String> qs = New.queue();*/
     }
 } ///:~

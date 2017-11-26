@@ -1,5 +1,4 @@
-package generics;
-//: generics/TupleTest.java
+package generics;//: generics/TupleTest.java
 
 import net.mindview.util.FiveTuple;
 import net.mindview.util.FourTuple;
@@ -27,7 +26,8 @@ public class TupleTest {
     }
 
     static FiveTuple<Vehicle, Amphibian, String, Integer, Double> k() {
-        return new FiveTuple<Vehicle, Amphibian, String, Integer, Double>(new Vehicle(), new Amphibian(), "hi", 47,11.1);
+        return new FiveTuple<Vehicle, Amphibian, String, Integer, Double>(new Vehicle(), new Amphibian(), "hi", 47,
+                11.1);
     }
 
     public static void main(String[] args) {
