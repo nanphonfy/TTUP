@@ -229,6 +229,7 @@ public class T15 {
      */
     @Test
     public void ContainerMethodDifferencesTest(){
+        ContainerMethodDifferences containerMethodDifferences=new ContainerMethodDifferences();
         /*Collection: [add, addAll, clear, contains, containsAll, equals, forEach, hashCode, isEmpty, iterator, parallelStream, remove, removeAll, removeIf, retainAll, size, spliterator, stream, toArray]
         Interfaces in Collection: [Iterable]
         Set extends Collection, adds: []
@@ -258,6 +259,25 @@ public class T15 {
         Interfaces in SortedMap: [Map]
         TreeMap extends Map, adds: [descendingKeySet, navigableKeySet, higherEntry, higherKey, floorKey, subMap, ceilingKey, pollLastEntry, firstKey, lowerKey, headMap, tailMap, lowerEntry, ceilingEntry, descendingMap, pollFirstEntry, lastKey, firstEntry, floorEntry, comparator, lastEntry]
         Interfaces in TreeMap: [NavigableMap, Cloneable, Serializable]*/
+    }
+
+    /**
+     * 【匿名内部类】
+     * 泛型还可用于内部类&匿名内部类
+     * 匿名内部类，实现Generator接口
+     */
+    @Test
+    public void BankTellerTest(){
+        BankTeller bankTeller=new BankTeller();
+    }
+
+    /**
+     * 【构建复杂模型】
+     * 构建的模型是一个零售店（包含走廊、货架和商品）
+     */
+    @Test
+    public void StoreTest(){
+        System.out.println(new Store(14, 5, 10));
     }
 
     /**
