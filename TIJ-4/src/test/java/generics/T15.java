@@ -281,6 +281,42 @@ public class T15 {
     }
 
     /**
+     * 【擦除】
+     */
+    @Test
+    public void ErasedTypeEquivalenceTest(){
+        //可以ArrayList.class,不可以ArrayList<String>().class
+        Class c1 = new ArrayList<String>().getClass();
+        Class c2 = new ArrayList<Integer>().getClass();
+        //true，不同类型在行为方面肯定不同，但是程序认为他们是相同类型
+        System.out.println(c1 == c2);
+    }
+
+    /**
+     * getClass().getTypeParameters()将返回一个TypeVariable对象数组，表示有泛型声明所声明的类型参数
+     * 在泛型代码内部，无法获得任何有关泛型参数类型的信息
+     * java泛型用擦除实现，任何具体的类型信息都被擦除，唯一知道是使用一个对象
+     * 理解擦除&如何处理（最大障碍）
+     */
+    @Test
+    public void LostInformationTest(){
+        LostInformation lostInformation = new LostInformation();
+
+        List<Frob> list = new ArrayList<>();
+        Map<Frob, Fnorkle> map = new HashMap<>();
+        Quark<Fnorkle> quark = new Quark<>();
+        Particle<Long, Double> p = new Particle<>();
+        //[E]
+        System.out.println(Arrays.toString(list.getClass().getTypeParameters()));
+        //[K, V]
+        System.out.println(Arrays.toString(map.getClass().getTypeParameters()));
+        //[Q]
+        System.out.println(Arrays.toString(quark.getClass().getTypeParameters()));
+        //[POSITION, MOMENTUM]
+        System.out.println(Arrays.toString(p.getClass().getTypeParameters()));
+    }
+
+    /**
      *
      */
     @Test
