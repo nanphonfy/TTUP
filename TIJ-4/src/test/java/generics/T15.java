@@ -317,6 +317,26 @@ public class T15 {
     }
 
     /**
+     * 因为擦除，java编译器无法映射HasF对象拥有f()。
+     * 为调用f（），必须协助泛型类，给定泛型类的边界，以告知编译器只能接受遵循这个边界的类型。
+     */
+    @Test
+    public void ManipulationTest(){
+        HasF hf = new HasF();
+        Manipulator<HasF> manipulator = new Manipulator<>(hf);
+        manipulator.manipulate();
+    }
+
+    /**
+     * 边界<T extends HasF>声明T必须具有类型HasF或者从HasF导出的类型，安全的在obj上调用f（）
+     * 类型参数的擦除：编译器实际会把类型参数替换为自己的擦除（T擦除到HasF）
+     */
+    @Test
+    public void Manipulator2Test(){
+        //<T extends HasF>
+    }
+
+    /**
      *
      */
     @Test
