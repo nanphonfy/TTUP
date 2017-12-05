@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.util.*;
 
 import static generics.GenericVarargs.makeList;
+import static net.mindview.util.Print.print;
 
 /**
  * @author nanphonfy(南风zsr)
@@ -334,6 +335,140 @@ public class T15 {
     @Test
     public void Manipulator2Test(){
         //<T extends HasF>
+    }
+
+    /**
+     * 泛型没贡献任何好处，只需很容易的自己去执行擦除
+     * 当希望代码能跨多个类工作时，使用泛型才有帮助
+     */
+    @Test
+    public void Manipulator3Test(){
+        Manipulator3 manipulator3=new Manipulator3(new HasF());
+    }
+
+    /**
+     * 某个类返回T的方法，泛型就有帮助（能返回确切类型）
+     * 必须查看所有代码，确定是否“足够复杂”到必须使用泛型
+     */
+    @Test
+    public void ReturnGenericTypeTest(){
+        ReturnGenericType returnGenericType=new ReturnGenericType(new HasF());
+        returnGenericType.get();
+    }
+
+    /**
+     * 擦除不是缺陷，而是java实现的一种折中。泛型类型只能在静态类型检查期间才出现，此后，都将被擦除，替换它为非泛型上界。
+     * List<T>擦除为List
+     * 普通类型变量擦除为Object
+     * 【擦除的问题】
+     * （使用非泛型的代码可不改变继续使用，直到重写为泛型）
+     * Foo<T>:类型T总被替换，它只是一个object
+     */
+    @Test
+    public void ErasureAndInheritanceTest(){
+        ErasureAndInheritance erasureAndInheritance=new ErasureAndInheritance();
+    }
+
+    /**
+     * 【边界处的动作】
+     * 泛型可表示没有任何意义的事物
+     * 元素视为Class<T>，擦除也意味着存储为Class，无任何参数
+     * 实际创建数组，并未拥有元素所蕴含的类型信息
+     */
+    @Test
+    public void ArrayMakerTest(){
+        ArrayMaker arrayMaker=new ArrayMaker(String.class);
+        //[null, null, null, null, null]
+        System.out.println(Arrays.toString(arrayMaker.create(5)));
+    }
+
+    /**
+     * 创建容器而不是数组，情况则不同
+     */
+    @Test
+    public void ListMakerTest(){
+        ListMaker listMaker=new ListMaker();
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void FilledListMakerTest(){
+        new FilledListMaker<String>();
+    }
+
+    /**
+     * 对进入set的类型进行检查是不需要的（由编译器执行）
+     * 而对get返回的值进行转型仍旧是需要的
+     * 泛型所有动作的边界：传递进来的值激进型额外的编译期检查，对传出去的值进行转型
+     * 有助于澄清对擦除的混淆（边界就是发生动作的地方）
+     */
+    @Test
+    public void SimpleHolderTest(){
+        SimpleHolder simpleHolder=new SimpleHolder();
+    }
+
+    /**
+     * 擦除让泛型代码丢失了某些操作能力
+     * 任何在运行时需指定确切类型的操作都无法工作
+     */
+    @Test
+    public void ErasedTest(){
+        new Erased<String>();
+        //因为类型信息已经被擦除了
+        /*if (arg instanceof T) {
+        }          // Error
+        T var = new T();                 // Error
+        T[] array = new T[SIZE];         // Error
+        T[] array = (T) new Object[SIZE]; // Unchecked warning*/
+    }
+
+    /**
+     * 有时必须引入标签（显示传递类型的Class对象）来对擦除进行补偿
+     * 编译器将确保类型标签可以匹配泛型参数
+     */
+    @Test
+    public void ClassTypeCaptureTest(){
+        new ClassTypeCapture<>(String.class);
+    }
+
+    /**
+     * Erased.java无法创建一个new T()，部分原因是因为擦除，而另一部分原因是
+     * 编译器不能验证T具有无参构造器
+     * java的解决方案：传递一个工厂对象，并使用它来创建新实例
+     */
+    @Test
+    public void InstantiateGenericTypeTest(){
+        ClassAsFactory<Employee> fe = new ClassAsFactory<>(Employee.class);
+        print("ClassAsFactory<Employee> succeeded");
+        try {
+            /*ClassAsFactory<Integer> failed是因为Integer没有任何默认的构造器
+            该错误不是在编译器捕获，所以这种写法不推荐*/
+            ClassAsFactory<Integer> fi = new ClassAsFactory<>(Integer.class);
+        } catch (Exception e) {
+            print("ClassAsFactory<Integer> failed");
+        }
+    }
+
+    /**
+     * 建议使用显示的工厂并限制其类型，使得只能接受实现这个工厂的类
+     * 只传递Class<T>的一种变体
+     */
+    @Test
+    public void FactoryConstraintTest(){
+        new Foo2<>(new IntegerFactory());
+        new Foo2<>(new Widget.Factory());
+    }
+
+    /**
+     * 模板方法设计模式
+     * get是模板方法
+     * create是在子类中定义的、用来产生子类类型的对象
+     */
+    @Test
+    public void CreatorGenericTest(){
+        CreatorGeneric creatorGeneric=new CreatorGeneric();
     }
 
     /**
