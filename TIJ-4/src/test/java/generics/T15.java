@@ -472,6 +472,104 @@ public class T15 {
     }
 
     /**
+     * 【泛型数组】
+     * Erased.java不能创建泛型数组，
+     * 解决方案：想要建泛型数组的地方都使用ArrayList
+     */
+    @Test
+    public void ListOfGenericsTest(){
+        ListOfGenerics listOfGenerics=new ListOfGenerics();
+    }
+
+    /**
+     * 创建泛型类型的数组（eg.ArrayList内部使用的是数组）
+     */
+    @Test
+    public void ArrayOfGenericReferenceTest(){
+        ArrayOfGenericReference arrayOfGenericReference=new ArrayOfGenericReference();
+    }
+
+    /**
+     * 编译器不能创建确切类型的数组（包括类型参数）
+     * 无论持有何种类型，都具有相同结构，创建一个Objet数组
+     * 并将其转型为所希望的数组类型，将产生异常
+     */
+    @Test
+    public void ArrayOfGenericTest(){
+        ArrayOfGeneric arrayOfGeneric=new ArrayOfGeneric();
+    }
+
+    /**
+     * 数组将跟踪他们的实际类型（在数组被创建时确定）
+     * 成功创建泛型数组的唯一方式:
+     * 就是创建一个被擦除类型的新数组,然后对其转型
+     */
+    @Test
+    public void GenericArrayTest(){
+        GenericArray<Integer> gai = new GenericArray<>(10);
+        // java.lang.ClassCastException
+        Integer[] ia = gai.rep();
+        // This is OK:
+        Object[] oa = gai.rep();
+    }
+
+    /**
+     * 我们不能声明T[] array = new T[sz]
+     * 因此得创建一个对象数组，再将其转型
+     * 因为有擦除，数组运行时类型就只能是Object[]，
+     * 如果我们立即将其转型为T[]，那么编译期该数组的实际类型将丢失
+     */
+    @Test
+    public void GenericArray2Test(){
+        /**
+         * 在内部将数组当做Object[]而不是T[]处理的优势
+         不太可能忘记数组运行时类型而意外引入缺陷
+         */
+        GenericArray2 genericArray2=new GenericArray2(2);
+    }
+
+    /**
+     * 对于新代码，应该传递一个类型标记
+     * 类型标记Class<T>被传递到构造器中，以便从擦除恢复
+     * 该数组运行时类是确切类型T[]
+     */
+    @Test
+    public void GenericArrayWithTypeTokenTest(){
+        GenericArrayWithTypeToken<Integer> gai = new GenericArrayWithTypeToken<>(Integer.class, 10);
+        // This now works:
+        Integer[] ia = gai.rep();
+    }
+
+    /**
+     * 【边界】
+     * 用于泛型的参数类型上设置限制条件
+     * 要理解extends在泛型边界上下文环境中和在普通环境下所具有的意义完全不同
+     * 下面展示了边界的基本要素
+     * BasicBounds看上去包含可以通过继承消除的冗余
+     */
+    @Test
+    public void BasicBoundsTest(){
+        BasicBounds basicBounds=new BasicBounds();
+    }
+
+    /**
+     * 如何在继承的每个层次上添加边界限制
+     */
+    @Test
+    public void InheritBoundsTest(){
+        InheritBounds inheritBounds=new InheritBounds();
+    }
+
+    /**
+     * 该例有更多层次的示例
+     * 通配符被限制为单一边界
+     */
+    @Test
+    public void EpicBattleTest(){
+        EpicBattle epicBattle=new EpicBattle();
+    }
+
+    /**
      *
      */
     @Test
