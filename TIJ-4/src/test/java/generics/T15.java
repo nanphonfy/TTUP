@@ -570,6 +570,54 @@ public class T15 {
     }
 
     /**
+     * 通配符：在泛型参数表达式中的问号
+     * 数组特殊行为：可向导出类型的数组赋予基类型的数组引用
+     */
+    @Test
+    public void CovariantArraysTest(){
+        CovariantArrays covariantArrays = new CovariantArrays();
+    }
+
+    /**
+     *泛型主要目的之一是将错误检测移入到编译期
+     *
+     */
+    @Test
+    public void NonCovariantGenericsTest(){
+        NonCovariantGenerics nonCovariantGenerics=new NonCovariantGenerics();
+    }
+
+    /**
+     * 与数组不同，泛型没有内建的协变类型
+     * 但，有时想在两个类型间建立某种类型的向上转型关系
+     * （通配符允许）
+     * List<? extends Fruit>可以合法的指向一个ArrayList<Apple>
+     * 一旦执行这种类型的向上转型，将丢失向其中传递任何对象的能力，甚至object也不行
+     */
+    @Test
+    public void GenericsAndCovarianceTest(){
+        GenericsAndCovariance genericsAndCovariance=new GenericsAndCovariance();
+    }
+
+    /**
+     * 【编译器有多聪明】
+     * 在使用contains、indexOf时，参数类型是Object，因此不涉及任何通配符
+     * 编译器也允许这个调用
+     */
+    @Test
+    public void CompilerIntelligenceTest(){
+        CompilerIntelligence compilerIntelligence=new CompilerIntelligence();
+    }
+
+    /**
+     * 为了在类型中使用了通配符的情况下禁止调用，需在参数列表中使用类型参数
+     */
+    @Test
+    public void HolderTest(){
+        Holder holder=new Holder();
+    }
+
+    /**
      *
      */
     @Test
