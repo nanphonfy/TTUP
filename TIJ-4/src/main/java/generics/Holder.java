@@ -19,16 +19,25 @@ public class Holder<T> {
         return value;
     }
 
-    @Override
-    public boolean equals(Object obj) {
+    /**
+     * 将接受Object类型而并非T类型的参数
+     *
+     * @param obj
+     * @return
+     */
+    @Override public boolean equals(Object obj) {
         return value.equals(obj);
     }
 
     public static void main(String[] args) {
         Holder<Apple> Apple = new Holder<>(new Apple());
         Apple d = Apple.get();
+        /**
+         * set参数也是? extends Fruit，意味着它可以是任何事物，而编译器无法验证任何事物的类型安全性
+         * 可能会ClassCastException异常
+         */
         Apple.set(d);
-        // Holder<Fruit> Fruit = Apple; // Cannot upcast
+        //Holder<Fruit> Fruit = Apple; // Cannot upcast
         Holder<? extends Fruit> fruit = Apple; // OK
         Fruit p = fruit.get();
         d = (Apple) fruit.get(); // Returns 'Object'

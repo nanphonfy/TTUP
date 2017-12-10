@@ -618,6 +618,64 @@ public class T15 {
     }
 
     /**
+     * 【逆变】
+     * 超类型通配符
+     * List<? super Apple> apples
+     * 参数 Apple是 Apple的某种基类型的List，向其添加 Apple或 Apple的子类型是安全的
+     */
+    @Test
+    public void SuperTypeWildcardsTest(){
+        SuperTypeWildcards superTypeWildcards=new SuperTypeWildcards();
+    }
+
+    /**
+     * 【逆变】
+     * 超类型通配符
+     * 向一个泛型类型写入和读取，思考子类型和超类型边界
+     * writeExact使用了确切参数类型（通配符）
+     * writeWithWildcard使用了：List<? super T> list, T item
+     */
+    @Test
+    public void GenericWritingTest(){
+        GenericWriting genericWriting=new GenericWriting();
+    }
+
+    /**
+     * 协变和通配符的一个复习
+     */
+    @Test
+    public void GenericReadingTest(){
+        GenericReading genericReading=new GenericReading();
+    }
+
+    /**
+     * 【无界通配符<?>】
+     * 编译器很少关心使用的是原生类型还是<?>
+     * （声明想要java泛型编写代码，泛型参数可持有任何类型）
+     */
+    @Test
+    public void UnboundedWildcards1Test(){
+        UnboundedWildcards1 unboundedWildcards1=new UnboundedWildcards1();
+    }
+
+    /**
+     * 无界通配符的一个重要应用，处理多个泛型参数
+     * List<?>等价于List<Object>
+     */
+    @Test
+    public void UnboundedWildcards2Test(){
+        UnboundedWildcards2 unboundedWildcards2=new UnboundedWildcards2();
+    }
+
+    /**
+     * 编译器何时关注原生和无界通配符的差异呢？
+     */
+    @Test
+    public void WildcardsTest(){
+        Wildcards wildcards=new Wildcards();
+    }
+
+    /**
      *
      */
     @Test

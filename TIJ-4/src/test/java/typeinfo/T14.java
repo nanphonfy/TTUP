@@ -1,0 +1,116 @@
+package typeinfo;
+
+import org.junit.Test;
+import typeinfo.toys.ToyTest;
+
+/**
+ * 运行时类型信息使得可在程序运行时发现和使用类型信息
+ * java在运行时识别对象和类信息：①传统RTTI（假定在编译时已知道所有类型）；
+ * ②反射，运行时发现和使用类信息。
+ *
+ * @author nanphonfy(南风zsr)
+ * @date 2017/12/10
+ */
+public class T14 {
+    /**
+     * 【为什么需要RTTI】
+     * 基类位于顶部，派生类向下扩展
+     * RTTI，在运行时，识别一个对象的类型
+     */
+    @Test
+    public void ShapesTest() {
+        Shapes shapes=new Shapes();
+    }
+
+    /**
+     * 【Class对象】
+     * 理解RTTI在java中的工作原理：
+     * 必须知道类型信息在运行时是如何表示的
+     * java使用Class对象（被保存在一个同名的.class文件中）执行其RTTI
+     * 为生成这个类的对象，JVM将使用“类加载器”（包含一条类加载器链，但只有一个原生类加载器，是JVM实现的一部分）
+     * 所有类都在第一次使用时动态加载到JVM，java程序在运行前未被完全加载，各个部分是在必须时才加载。
+     * 类加载器：①检查这个类的Class对象是否已加载；
+     * ②未加载，类加载器会根据类名查找.class文件；
+     * ③字节码被加载时，接受验证，确保其没被破坏。
+     * 一旦某个类的Class对象被载入内存，就可被用来创建这个类的所有对象。
+     */
+    @Test
+    public void SweetShopTest() {
+        /**
+         * Class对象近在需要时才被加载，static初始化是在类加载时进行
+         Class.forName()是Class类的一个static成员，Class对象就和其他对象一样，可获取并操作它的引用（类加载器的工作）
+         forName()是取得Class对象引用的方法
+         想在运行时使用类型信息，就必须先获得Class对象的引用
+         */
+        SweetShop sweetShop=new SweetShop();
+    }
+
+    /**
+     * 若已经有类型对象，就可调用getClass来获取Class引用
+     * Class的newInstance() ：实现“虚拟构造器”的一种途径
+     */
+    @Test
+    public void ToyTestTest() {
+        ToyTest toyTest=new ToyTest();
+    }
+
+    /**
+     * 【类字面常量】
+     * XX.class（更简单、安全、高效），可应用普通类、接口、数组以及基本数据类型
+     * 使用.class对象引用时，不会自动地初始化该Class对象
+     * ①加载（类加载器将查找字节码并创建一个Class对象）
+     * ②链接（验证类中的字节码，为静态域分配存储空间，解析该类创建的对其他类的所有引用）
+     * ③初始化（对其初始化，执行静态初始化器和静态初始化块）
+     * 初始化被延迟到对静态方法（构造器隐式是静态的）或非数静态域进行首次引用时才执行
+     */
+    @Test
+    public void ClassInitializationTest() {
+        /*初始化有效实现了尽可能的惰性
+        仅适用.class获得类引用，不会引发初始化
+        Class.forName立即进行了初始化*/
+        ClassInitialization classInitialization=new ClassInitialization();
+    }
+
+    /**
+     * 【泛化的Class引用】
+     * Class引用表示的就是它所指向的对象的确切类型，而该对象便是Class类的一个对象
+     * 以下用到了泛型语法，通过泛型，可让编译器强制执行额外的类型检查
+     */
+    @Test
+    public void GenericClassReferencesTest() {
+        Class intClass = int.class;
+        Class<Integer> genericIntClass = int.class;
+        genericIntClass = Integer.class; // Same thing
+        intClass = double.class;
+        //genericIntClass = double.class; // Illegal
+    }
+
+    /**
+     * 为了在使用泛化的Class引用时放松限制，可使用通配符（?，表示任何事物）
+     * Class<?>表示并非碰巧或疏忽，而是使用了一个非具体的类引用
+     */
+    @Test
+    public void WildcardClassReferencesTest() {
+        Class<?> intClass = int.class;
+        intClass = double.class;
+    }
+
+    /**
+     * 将通配符与extends关键字相结合，创建一个范围
+     */
+    @Test
+    public void BoundedClassReferencesTest() {
+        Class<? extends Number> bounded = int.class;
+        bounded = double.class;
+        bounded = Number.class;
+        // Or anything else derived from Number.
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void Test() {
+
+    }
+}
