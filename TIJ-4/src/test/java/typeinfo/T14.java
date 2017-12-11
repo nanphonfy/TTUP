@@ -1,6 +1,8 @@
 package typeinfo;
 
 import org.junit.Test;
+import typeinfo.pets.LiteralPetCreator;
+import typeinfo.toys.GenericToyTest;
 import typeinfo.toys.ToyTest;
 
 /**
@@ -104,6 +106,72 @@ public class T14 {
         bounded = double.class;
         bounded = Number.class;
         // Or anything else derived from Number.
+    }
+
+    /**
+     * Class引用添加泛型：为了提供编译期类型检查，不用等到运行时才发现错误
+     * 以下使用泛型类语法
+     * 存储一个类的引用，填充List的对象使用newInstance()方法
+     * newInstance()方法必须假设任何与它工作的类型都有默认构造器（无参）
+     */
+    @Test
+    public void FilledListTest() {
+        FilledList<CountedInteger> fl = new FilledList<>(CountedInteger.class);
+        System.out.println(fl.create(15));
+    }
+
+    /**
+     * 泛型用于Class对象，newInstance()将返回该对象的确切类型，而不仅仅只是Object
+     */
+    @Test
+    public void GenericToyTestTest() {
+        GenericToyTest genericToyTest=new GenericToyTest();
+    }
+
+    /**
+     * 【新的转型语法】
+     * Class引用的转型语法——cast方法
+     * 对于无法使用普通转型的情况非常有用
+     * 若存储了Class引用，可通过这个引用转型
+     */
+    @Test
+    public void ClassCastsTest() {
+        ClassCasts classCasts=new ClassCasts();
+    }
+
+    /**
+     * 【类型转换前先做检查】
+     * RTTI形式：
+     * ①传统的类型转换，RTTI确保类型转换正确性（ClassCastException）
+     * ②代表对象类型的Class对象，获取运行时信息
+     * ③instanceof，返回布尔值，告诉我们对象是不是某个特定类型实例
+     * 下面是继承自Individual的类继承体系
+     */
+    @Test
+    public void PetCountTest() {
+        /**
+         * 可随机创建不同类型的宠物，还可创建宠物数组和List
+         * 为使工具能够适用多种不同实现，定义为抽象类
+         * 【PetCreator】
+         */
+
+        /**
+         * ForNameCreator：用Class.forName
+         *
+         * PetCount：对Pet计数
+         * instanceof的限制：只可将其与命名类型比较，不能与Class对象做比较
+         有一个替代方案，稍后演示（当程序有许多instanceof，说明设计有瑕疵）
+         */
+        PetCount petCount = new PetCount();
+    }
+
+    /**
+     * 【使用类字面常量】
+     * 重新实现PetCount，更清晰
+     */
+    @Test
+    public void LiteralPetCreatorTest() {
+        LiteralPetCreator literalPetCreator=new LiteralPetCreator();
     }
 
     /**
