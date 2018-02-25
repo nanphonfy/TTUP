@@ -2,6 +2,7 @@ package typeinfo;
 
 import org.junit.Test;
 import typeinfo.pets.LiteralPetCreator;
+import typeinfo.pets.Pets;
 import typeinfo.toys.GenericToyTest;
 import typeinfo.toys.ToyTest;
 
@@ -172,6 +173,98 @@ public class T14 {
     @Test
     public void LiteralPetCreatorTest() {
         LiteralPetCreator literalPetCreator=new LiteralPetCreator();
+    }
+
+    /**
+     * 【使用类字面常量】
+     * 在typeinfo.pets类库有两种PetCreator实现，为将第二种实现做为默认实现，可创建一个使用LiteralPetCreator的外观
+     */
+    @Test
+    public void PetsTest() {
+        Pets pets = new Pets();
+    }
+
+    /**
+     * 【使用类字面常量】
+     * 在typeinfo.pets类库有两种PetCreator实现，为将第二种实现做为默认实现，可创建一个使用LiteralPetCreator的外观
+     */
+    @Test
+    public void PetCount2Test() {
+        PetCount2 petCount2 = new PetCount2();
+    }
+
+    /**
+     * 【动态instanceof】
+     * Class.isInstance方法提供了一种动态测试对象的途径，所有instanceof语句都可被替换掉。
+     * isInstance方法使我们不再需要instanceof表达式。
+     * 也意味着添加新类型Pet，只需简单改变LiteralPetCreator数组，而不用改动程序
+     * （使用instanceof时是不可能的）。
+     */
+    @Test
+    public void PetCount3Test() {
+        PetCount3 petCount3 = new PetCount3();
+    }
+
+    /**
+     * 【递归计数】
+     * 在PetCount3中的Map预加载所有不同的Pet类。使用Class.isAssignableFrom，并创建一个不局限于对Pet计数的通用工具。
+     */
+    @Test
+    public void TypeCounterTest() {
+        //TypeCounter typeCounter=new TypeCounter();
+        PetCount4 petCount4=new PetCount4();
+    }
+
+    /**
+     * 【注册工厂】
+     * 生成Pet继承机构中的对象的问题：添加新Pet类型时，必须添加为LiteralPetCreator中的项。
+     * 考虑在每个子类添加静态初始化器，使得将新类添加到List中。然而生成器在其列表中不包含该类，因此永远不能创建这个类的对象，也不能被加载并置于这个列表。
+     * 使用工厂方法设计模式，将对象创建工作交给类自己去完成，工厂方法可被多态调用，从而创建恰当类型的对象。
+     * 泛型T使得create可在每种Factory实现中返回不同的类型，充分利用了协变返回类型。
+     */
+    @Test
+    public void RegisteredFactoriesTest() {
+        RegisteredFactories registeredFactories = new RegisteredFactories();
+    }
+
+    /**
+     * 【instanceof与Class的等价性】
+     * 在查询类型信息时，以instanceof的形式与直接比较Class对象有一个很重要的差别
+     * instanceof和isInstance生成的结果完全一样，equals和==也一样，但这两组测试得出的结论却不同。
+     * instanceof保持了类型的概念（是该类或是该类的派生类）
+     * Class用==比较，就没有考虑继承。
+     */
+    @Test
+    public void FamilyVsExactTypeTest() {
+        FamilyVsExactType familyVsExactType = new FamilyVsExactType();
+    }
+
+    /**
+     * 【反射：运行时的类信息】
+     * 假设获取一个指向某个不在我们程序空间的对象引用，编译器没法获知该对象所属类。
+     * eg.从磁盘文件或网络连接获取一串字节，被告知代表一个类。
+     * 置身于更大规模的编程世界：
+     * ①基于构建的编程，可视化编程方法，反射提供了一种机制——检查可用的方法并返回方法名。
+     * java通过JavaBeans提供了基于构件的编程架构。
+     * ②运行时获取类信息的另一动机：希望提供在跨网络的远程平台上创建和运行对象的能力。
+     * 这被称为远程方法调用（RMI），允许一个java程序将对象分布到多台机器上。
+     * eg.大计算量的任务划分多计算单元到空闲机器、处理特定类型任务的代码到特定机器、分布式计算也支持适用于执行特殊任务的专用硬件……
+     * Class类和java.lang.reflect类库一起对反射概念提供了支持，包含Field、Method、Constructor类，
+     * 这些类型的对象由JVM在运行时创建，用以表示未知类里对应的成员。
+     * 【认识反射机制并无神奇之处】通过反射与一个未知类型的对象打交道时，JVM只简单检查这个对象，看它属于哪个特定的类。在用它做其他事情前，必须先加载那个类的Class对象。
+     * 因此，那个类的.class文件对于JVM来说必须是可获取的：①本地机器；②网络。
+     * 【RTTI和反射的区别】对RTTI（Run-Time Type Identification）来说，编译器在编译时打开和检查.class文件。
+     * 对反射机制来说，.class文件在编译时是不可获取的，所以是在运行时打开和检查.class文件。
+     */
+
+    /**
+     * 【类方法提取器】
+     * 通常不需直接使用反射工具，但在需要创建更动态的代码时会很有用。
+     * eg.类方法提取器，浏览了类定义的源代码或是其JDK文档。反射机制能够编写自动展示完整接口的简单工具。
+     */
+    @Test
+    public void ShowMethodsTest() {
+        ShowMethods showMethods = new ShowMethods();
     }
 
     /**
