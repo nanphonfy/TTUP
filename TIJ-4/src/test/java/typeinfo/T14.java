@@ -261,10 +261,58 @@ public class T14 {
      * 【类方法提取器】
      * 通常不需直接使用反射工具，但在需要创建更动态的代码时会很有用。
      * eg.类方法提取器，浏览了类定义的源代码或是其JDK文档。反射机制能够编写自动展示完整接口的简单工具。
+     *
+     * 若不记得一个类是否有某方法或不知该类能做啥，该工具能节省很多时间
      */
     @Test
     public void ShowMethodsTest() {
         ShowMethods showMethods = new ShowMethods();
+    }
+
+    /**
+     * 【代理】
+     * 代理是基本设计模式之一（充当中间人，涉及与“实际”对象的通信）
+     * 展示代理结构的简单实例：
+     * consumer()接受Interface。无法做到正在获取的是RealObject或SimpleProxy。
+     * 但SimpleProxy已被插入到客户端和RealObject之间，因此会执行并调用RealObject上相同的方法。
+     */
+    @Test
+    public void SimpleProxyDemoTest() {
+        /**
+         * 任何时刻，只要想额外从实际对象中分离到不同地方，特别是想能够容易做出修改，代理就显得很有用。
+         eg.跟踪RealObject中方法的调用或希望度量这些调用的开销。
+         肯定不希望将其合并到应用中的代码，而代理可容易添加或移除他们。
+         */
+        SimpleProxyDemo simpleProxyDemo = new SimpleProxyDemo();
+    }
+
+    /**
+     * 【动态代理】
+     * 动态代理比代理思想更前卫，可动态创建代理并动态处理对所代理方法的调用。
+     * 动态代理所做的所有调用都会被重定向到单一调用处理器上，它的工作是揭示调用的类型并确定相应的对策。
+     * 用动态代理重写SimpleProxyDemo
+     */
+    @Test
+    public void SimpleDynamicProxyTest() {
+        /**
+         * 调用静态方法Proxy.newProxyInstance(）可创建动态代理，需要一个类加载器&一个该代理实现的接口列表（不是类或抽象类），
+         * 以及InvocationHandler接口的一个实现。动态代理可将所有调用重定向到调用处理器。
+         向处理器的构造器传递一个实际对象的引用，执行中介任务时，请求转发。
+         invoke传递进代理对象，对接口的调用将重定向为对代理的调用。
+         */
+        SimpleDynamicProxy simpleDynamicProxy = new SimpleDynamicProxy();
+    }
+
+    /**
+     * 【动态代理】
+     * 通常，我们会执行被代理的操作，使用method.invoke()将请求转发给被代理对象，并传入必须的参数。
+     * 看起来受限，但可通过传递其他参数，过滤某些方法调用：
+     * 这里，我们只查看了方法名，还可查看方法签名的其他方面甚至搜索参数值。
+     * 动态代理并非为日常使用工具，但它可很好解决某些类型的问题。
+     */
+    @Test
+    public void SelectingMethodsTest() {
+        SelectingMethods selectingMethods=new SelectingMethods();
     }
 
     /**

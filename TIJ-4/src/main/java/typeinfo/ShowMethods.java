@@ -6,7 +6,6 @@ package typeinfo;//: typeinfo/ShowMethods.java
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.regex.Pattern;
-
 import static net.mindview.util.Print.print;
 
 public class ShowMethods {
@@ -15,6 +14,9 @@ public class ShowMethods {
             "To show all methods in class or:\n" +
             "ShowMethods qualified.class.name word\n" +
             "To search for methods involving 'word'";
+    /**
+     * \w表示字符类（包括大小写字母，数字），后面的+号的作用在前一个字符上，即\w+,表示一个或多个\w,最少一个
+     */
     private static Pattern p = Pattern.compile("\\w+\\.");
 
     public static void main(String[] args) {
@@ -31,7 +33,12 @@ public class ShowMethods {
             Method[] methods = c.getMethods();
             Constructor[] ctors = c.getConstructors();
             if (args.length == 1) {
+                /**
+                 * 这里只使用toString生成一个含有完整方法特征签名的字符串（判断其是否与目标字符串相符，用indexOf），
+                 * 并使用正则表达式去掉命名修饰符
+                 */
                 for (Method method : methods) {
+                    print();
                     print(p.matcher(method.toString()).replaceAll(""));
                 }
                 for (Constructor ctor : ctors) {
