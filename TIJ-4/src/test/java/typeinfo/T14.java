@@ -1,5 +1,6 @@
 package typeinfo;
 
+import net.mindview.util.Null;
 import org.junit.Test;
 import typeinfo.pets.LiteralPetCreator;
 import typeinfo.pets.Pets;
@@ -313,6 +314,129 @@ public class T14 {
     @Test
     public void SelectingMethodsTest() {
         SelectingMethods selectingMethods=new SelectingMethods();
+    }
+
+    /**
+     * 【空对象】
+     * 使用内置的null每次使用其引用都必须检查其是否为null，显得枯燥。
+     * 这时引入空对象思想将很有用（返回实际上不存在的“真实”对象的值，而不必浪费精力去检查null）。
+     * 即使空对象可响应“实际”对象可以响应的所有消息，也仍需测试是否为空（创建一个标记接口）。
+     */
+    @Test
+    public void NullPersonTest() {
+        Null nullTest;
+        /***
+         * 这使得instanceof可探测空对象，不需要在所有类都添加isNull方法。
+         通常空对象都是单例的，因此用静态final实例创建。
+         */
+        Person.NullPerson nullPerson;
+    }
+
+    /**
+     * 【空对象】
+     * 将Person空对象放在每个Position上。
+     * 有了Position就不需创建空对象了，因为Person.NULL的存在就表示这是一个空Position。
+     */
+    @Test
+    public void PositionTest() {
+        Position position = new Position("test");
+    }
+
+    /**
+     * 【空对象】
+     * Staff类可在填充职位时查询空对象
+     * 注意：某些地方仍需测试空对象，与检查是否为null没差异，
+     * 但在其他地方（eg.本例的toString）就不需额外测试（可直接假设所有对象都有效）
+     */
+    @Test
+    public void StaffTest() {
+        Staff staff = new Staff();
+    }
+
+    /**
+     * 【空对象】
+     * 若用接口取代具体类，可使用动态代理来自动创建空对象。
+     * 假设Robot接口，定义一个名字、一个模型和一个描述Robot行为能力的List<Operation>，Operation包含一个描述和一个命令
+     * 可通过operations来访问Robot的服务
+     * 创建一个扫雪Robot
+     */
+    @Test
+    public void SnowRemovalRobotTest() {
+        SnowRemovalRobot snowRemovalRobot = new SnowRemovalRobot("test");
+    }
+
+    /**
+     * 【动态代理&空对象】
+     * 假设有多种不同类型的Robot，相对没中过类型都创建一个空对象，可通过动态代理捕获.
+     * 无论何时，需一个空Robot对象，只需调用newNullRobot，并传递需要代理的Robot类型。
+     * 代理会满足Robot和Null接口的需求，并提供所代理的类型的确切名字。
+     */
+    @Test
+    public void NullRobotTest() {
+        NullRobot nullRobot = new NullRobot();
+    }
+
+    /**
+     * 【模拟对象和桩】
+     空对象的了逻辑变体是模拟对象和桩。但模拟对象和桩都只是假扮可传递实际信息的存活对象，而空对象是一种更加智能化的替代物。
+     模拟对象是轻量级和自测试的，桩通常是重量级的，经常在测试间被复用。
+     */
+
+    /**
+     * 【接口与类型信息】
+     * interface重要目标：隔离构件，降低耦合性。
+     * 通过接口可实现该目标，而通过类型信息，这种耦合性会被传播出去。
+     * 接口并非是对解耦的无懈可击的保障。
+     */
+    @Test
+    public void InterfaceViolationTest() {
+        //A接口
+        //实现A接口，可看到代码围绕实际实现类型潜行
+        //通过RTTI，a被当做B实现，通过将其转型为B，可调用不在A中的方法
+        InterfaceViolation interfaceViolation = new InterfaceViolation();
+    }
+
+    /**
+     * 【接口与类型信息】
+     * 接口并非是对解耦的无懈可击的保障
+     * 最简单的解决方案：对实现使用包访问权限，包外部的客户端看不到它
+     * 唯一的public类HiddenC可在其他包调用，产生A接口类型的对象（即使返回的是C类型）。
+     * 包外不能命名C，若试图向下转型C，将被禁止。
+     *
+     *
+     * 而通过反射，仍旧可以调用所有方法，甚至private。若知道方法名，就可在其对象Method对象调用setAccessible(true)，就像在callHiddenMethod中一样。
+     * 只发布编译后的代码，也并不解决问题，因为只需运行javap（反编译器）即可突破限制。
+     * javap -private C
+     * 因此任何人都可获取最私有的方法的名字和签名，并调用。
+     */
+    @Test
+    public void HiddenImplementationTest() {
+        HiddenImplementation hiddenImplementation = new HiddenImplementation();
+    }
+
+    /**
+     * 若将接口实现为一个私有内部类，对反射仍旧无任何隐藏
+     */
+    @Test
+    public void InnerImplementationTest() {
+        InnerImplementation innerImplementation = new InnerImplementation();
+    }
+
+    /**
+     * 若将接口实现为一个匿名类，对反射仍旧无任何隐藏
+     */
+    @Test
+    public void AnonymousImplementationTest() {
+        AnonymousImplementation anonymousImplementation = new AnonymousImplementation();
+    }
+
+    /**
+     * 对于域（即便是private域），对反射仍旧无任何隐藏
+     * 但final域遭遇修改时是安全的，实际上不会发生任何修改。
+     */
+    @Test
+    public void ModifyingPrivateFieldsTest() {
+        ModifyingPrivateFields modifyingPrivateFields = new ModifyingPrivateFields();
     }
 
     /**
