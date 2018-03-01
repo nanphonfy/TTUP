@@ -132,6 +132,107 @@ public class T13 {
     }
 
     /**
+     * 【正则表达式】
+     * Unix工具集：sed和awk
+     * 正则表达式是一种强大而灵活的文本处理工具。
+     * （基础）
+     * 一个负号可能在最前面：-?
+     * 一或多位数字：\d
+     * java对反斜杠\有不同的处理
+     * 可能一负号&一位或多位数字：-?\\d+
+     * 检查String是否匹配描述正则表达式
+     */
+    @Test
+    public void IntegerMatchTest() {
+        //（-|\\+）？:一个-或+或二者皆没有
+        IntegerMatch integerMatch = new IntegerMatch();
+    }
+
+    /**
+     * 【正则表达式】
+     * split：将字符串从正则表达式匹配的地方切开
+     * \W：非单词字符
+     * \w：一个单词字符
+     * 字母n后面跟着一个或多个非单词字符
+     */
+    @Test
+    public void SplittingTest() {
+        Splitting splitting = new Splitting();
+    }
+
+    /**
+     * String自带正则表达式工具：替换
+     */
+    @Test
+    public void ReplacingTest() {
+        Replacing replacing = new Replacing();
+    }
+
+    /**
+     * 【创建正则表达式】
+     *
+     * java.util.regex.Pattern
+     *
+     * （字符）
+     * \t 制表符
+     * \n 换行符
+     * \r 回车
+     * \f 换页
+     * \e 转义
+     *
+     * （字符类）
+     * . 任意字符
+     * [abc] 同a|b|c
+     * [^abc] 非(a|b|c)（否认）
+     * [a-zA-Z] 从a到z 或 从A到Z的任意字符（范围）
+     * [abc[hij]] 同a|b|c|h|i|j（合并）
+     * [a-z&&[hij]] 任意h、i或j(交)
+     * \s 空白符（空格、tab、换行、换页和回车）
+     * \S 非空白符（[^\s]）
+     * \d 数字[0-9]
+     * \D 非数字[^0-9]
+     * \w 词字符[a-zA-Z0-9]
+     * \W 非词字符[^\w]
+     *
+     * （逻辑操作符）
+     * XY Y跟在X后面
+     * X|Y X或Y
+     * (X) 捕获组
+     *
+     * （边界匹配符）
+     * ^ 一行的起始
+     * $ 一行的结束
+     * \b 词的边界
+     * \B 非词的边界
+     * \G 前一个匹配的结束
+     */
+    @Test
+    public void RudolphTest() {
+        //java.util.regex.Pattern
+        Rudolph rudolph = new Rudolph();
+    }
+
+    /**
+     * 【量词】
+     * 占有型（java独有）
+     * 贪婪型 勉强型 占有型 如何匹配
+     * X?     X??    X？+    一个或零个X
+     * X*     X*?    X*+    零个或多个X
+     * X+     X+?    X++    一个或多个X
+     * X{n}   X{n}?  X{n}+  恰好n次X
+     * X{n,}  X{n,}? X{n,}+ 至少n次X
+     * X{n,m} X{n,m}? X{n,m}+  X至少n次，且不超过m次
+     */
+
+    /**
+     *
+     */
+    @Test
+    public void TestRegularExpressionTest() {
+        TestRegularExpression testRegularExpression = new TestRegularExpression();
+    }
+
+    /**
      *
      */
     @Test
