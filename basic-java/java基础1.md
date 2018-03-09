@@ -75,7 +75,7 @@ exception表示一种设计或实现问题，若程序运行正常，从不会�
 
 - 最常见的5个runtime exception
 >所谓系统异常，就是可能在java虚拟机正常工作时抛出的异常，它们都是RuntimeException的子类，有NullPointerException（空指针）、ArrayIndexOutOfBoundsException（数组越界）、
-ClassCastException（类转换异常）、ArrayStoreException（数据存储异常，操作数组时类型不同）、BufferOverflowException（IO异常）。
+ClassCastException（类转换异常）、ArrayStoreException（数据存储异常，操作数组时类型不同）、[BufferOverflowException]（http://blog.csdn.net/wletv/article/details/8707070）IO异常，缓冲区溢出。
 
 - java语言的异常处理
 >throws 捕获并向外抛出异常、throw 抛出异常、try catch 是内部捕获异常并做自定义处理finally 是无论是否有异常都会被处理，除非在finally前存在System.exit(int i)
@@ -149,4 +149,4 @@ ClassCastException（类转换异常）、ArrayStoreException（数据存储异�
 
 - Collection VS [Collections](http://blog.csdn.net/yangfeixien/article/details/40391771)
 >Collection是集合类的上级接口，Set和List都继承它；  
-Collections是针对集合类的一个帮助类，他提供一系列静态方法实现对各种集合的搜索、排序、线程安全化等操作。
+Collections是针对集合类的一个帮助类，他提供一系列静态方法实现对各种集合的搜索、排序、线程安全化、打散、二叉搜索、copy、等操作。
