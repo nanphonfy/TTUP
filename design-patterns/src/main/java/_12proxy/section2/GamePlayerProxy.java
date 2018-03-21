@@ -1,4 +1,4 @@
-package proxy.section2;
+package _12proxy.section2;
 
 /**
  * @author cbf4Life cbf4life@126.com
@@ -21,7 +21,6 @@ public class GamePlayerProxy implements IGamePlayer {
     //´úÁ·µÇÂ¼
     @Override public void login(String user, String password) {
         this.gamePlayer.login(user, password);
-
     }
 
     //´úÁ·Éý¼¶
