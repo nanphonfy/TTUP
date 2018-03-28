@@ -28,7 +28,7 @@ public class HummerH1Model extends HummerModel {
 		System.out.println("º·ÂíH1Í£³µ...");
 	}
 	
-	protected boolean isAlarm() {
+	@Override protected boolean isAlarm() {
 		return this.alarmFlag;
 	}
 

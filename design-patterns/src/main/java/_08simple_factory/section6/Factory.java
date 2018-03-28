@@ -17,7 +17,7 @@ public class Factory {
 		if(prMap.containsKey(type)){
 			product = prMap.get(type);
 		}else{
-			if(type.equals("Product1")){
+			if("Product1".equals(type)){
 				product = new ConcreteProduct1();
 			}else{
 				product = new ConcreteProduct2();

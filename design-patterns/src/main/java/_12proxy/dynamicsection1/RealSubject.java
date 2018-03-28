@@ -7,7 +7,7 @@ package _12proxy.dynamicsection1;
 public class RealSubject implements Subject {
 
 	//ÒµÎñ²Ù×÷
-	public void doSomething(String str) {
+	@Override public void doSomething(String str) {
 		System.out.println("do something!---->" + str);
 	}
 

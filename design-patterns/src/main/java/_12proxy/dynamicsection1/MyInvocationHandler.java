@@ -17,7 +17,7 @@ public class MyInvocationHandler implements InvocationHandler {
     }
 
     //代理方法
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    @Override public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         //设置返回值
         Object result = null;
         //前置通知

@@ -23,7 +23,7 @@ class Spy extends Thread{
 	@Override
 	public void run(){
 		while(true){
-			if(this.type.equals("breakfast")){ //监控是否在吃早餐
+			if("breakfast".equals(this.type)){ //监控是否在吃早餐
 				//如果发现韩非子在吃饭，就通知李斯
 				if(this.hanFeiZi.isHavingBreakfast()){
 					this.liSi.update("韩非子在吃饭");
