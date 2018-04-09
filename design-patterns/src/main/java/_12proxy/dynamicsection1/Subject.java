@@ -5,7 +5,6 @@ package _12proxy.dynamicsection1;
  * I'm glad to share my knowledge with you all.
  */
 public interface Subject {
-	
 	//ÒµÎñ²Ù×÷
 	public void doSomething(String abc);
 }

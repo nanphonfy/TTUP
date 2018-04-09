@@ -40,5 +40,4 @@ public class MyInvocationHandler implements InvocationHandler {
     public void after() {
         System.out.println("Ö´ÐÐafter·½·¨");
     }
-
 }
