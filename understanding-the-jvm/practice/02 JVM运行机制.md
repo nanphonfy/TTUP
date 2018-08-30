@@ -129,6 +129,91 @@ iload_1指令之后 |0->100,1->98 |0->100,1->98
 iadd指令之后 |0->100,1->98 |0->198
 istore_2指令之后 |0->100,1->98,3->198 |空
 
+- Java栈——栈上分配
+
+```JAVA 
+- 堆上分配:每次需要清理空间
+public void method(){
+	BcmBasicString* str=new BcmBasicString;
+	....    
+	delete str;
+}
+
+- 栈上分配:函数调用完成自动清理
+public void method(){
+	BcmBasicString str;
+	....
+}
+```
+- Java栈——栈上分配  
+```JAVA  
+public class OnStackTest {
+	public static void alloc(){
+		byte[] b=new byte[2];
+		b[0]=1;
+	}
+	public static void main(String[] args) {
+		long b=System.currentTimeMillis();
+		for(int i=0;i<100000000;i++){
+			alloc();
+		}
+		long e=System.currentTimeMillis();
+		System.out.println(e-b);
+	}
+}
+
+-server -Xmx10m -Xms10m
+-XX:+DoEscapeAnalysis -XX:+PrintGC
+输出结果 5
+
+-server -Xmx10m -Xms10m  
+-XX:-DoEscapeAnalysis -XX:+PrintGC
+……
+[GC 3550K->478K(10240K), 0.0000977 secs]
+[GC 3550K->478K(10240K), 0.0001361 secs]
+[GC 3550K->478K(10240K), 0.0000963 secs]
+564
+```
+>小对象（一般几十个bytes），在没有逃逸的情况下，可以直接分配在栈上;  
+直接分配在栈上，可以自动回收，减轻GC压力;  
+大对象或者逃逸对象无法栈上分配.  
+
+### 栈、堆、方法区交互
+```JAVA 
+//运行时, jvm 把appmain的信息都放入方法区
+public class AppMain {
+    //main 方法本身放入方法区。
+    public static void main(String[] args) {
+        Sample test1 = new Sample(" 测试1 ");
+        //test1是引用，所以放到栈区里， Sample是自定义对象应该放到堆里面
+        Sample test2 = new Sample(" 测试2 ");
+        test1.printName();
+        test2.printName();
+    }
+}
+
+ //运行时, jvm 把appmain的信息都放入方法区 
+public class Sample {
+    private String name;
+    //new Sample实例后， name 引用放入栈区里， name 对象放入堆里
+    public Sample(String name){
+        this.name = name;
+    }
+    //print方法本身放入 方法区里。
+    public void printName() {
+        System.out.println(name);
+    }
+}
+```
+>运行时数据区
+>>- 堆区：sample 实例、Name：测试1
+>>- 方法区：Sample(含printName方法)  、AppMain（含main方法）
+>>- java栈区：执行main方法的主线程的方法调用栈（局部变量test1）
+
+
+
+
+
 
 
 
