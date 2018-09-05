@@ -222,6 +222,21 @@ public class Sample {
 >- 对于普通变量，一个线程中更新的值，不能马上反应在其他变量中；  
 如果需要在其他线程中立即可见，需要使用 volatile 关键字。  
 
+![image](http://image.mamicode.com/info/201804/20180428233328276142.png)
+
+- volatile  
+>没有volatile -server 运行 无法停止；
+>volatile 不能代替锁  
+一般认为volatile 比锁性能好（不绝对);  
+选择使用volatile的条件是：语义是否满足应用。  
+
+>- 可见性:一个线程修改了变量，其他线程可以立即知道;  
+>- 保证可见性的方法：volatile、synchronized（unlock之前，写变量值回主存）
+、final(一旦初始化完成，其他线程就可见)。
+>- 有序性:在本线程内，操作都是有序的
+在线程外观察，操作都是无序的。（指令重排 或 主内存同步延时）;
+
+
 
 
 
