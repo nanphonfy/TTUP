@@ -222,9 +222,37 @@ public class Sample {
 >- 对于普通变量，一个线程中更新的值，不能马上反应在其他变量中；  
 如果需要在其他线程中立即可见，需要使用 volatile 关键字。  
 
-![image](http://image.mamicode.com/info/201804/20180428233328276142.png)
+![](http://image.mamicode.com/info/201804/20180428233328276142.png)
 
 - volatile  
+
+```JAVA  
+public class VolatileStopThread extends Thread{
+    private volatile boolean stop = false;
+    public void stopMe(){
+        stop=true;
+    }
+
+    @Override
+    public void run(){
+        int i=0;
+        while(!stop){
+            i++;
+        }
+        System.out.println("Stop thread");
+    }
+
+    public static void main(String args[]) throws InterruptedException{
+        //线程会把共享变量拷贝一份副本，放入自己的内存，即线程工作内存和主内存
+        VolatileStopThread t=new VolatileStopThread();
+        t.start();
+        Thread.sleep(1000);
+        t.stopMe();
+        Thread.sleep(1000);
+    }
+}
+```
+
 >没有volatile -server 运行 无法停止；
 >volatile 不能代替锁  
 一般认为volatile 比锁性能好（不绝对);  
@@ -236,8 +264,87 @@ public class Sample {
 >- 有序性:在本线程内，操作都是有序的
 在线程外观察，操作都是无序的。（指令重排 或 主内存同步延时）;
 
+- 指令重排
+```
+线程内串行语义
+写后读	a = 1;b = a;	//写一个变量之后，再读这个位置。
+写后写	a = 1;a = 2;	//写一个变量之后，再写这个变量。
+读后写	a = b;b = 1;	//读一个变量之后，再写这个变量。
+以上语句不可重排
 
+编译器不考虑多线程间的语义
+可重排： a=1;b=2;
+```
 
+- 指令重排 – 破坏线程间的有序性
+```JAVA  
+class OrderExample {
+    int a = 0;
+    boolean flag = false;
+
+    public void writer() {
+        a = 1;
+        flag = true;
+    }
+
+    public void reader() {
+        if (flag) {
+            int i =  a +1;
+            //……
+        }
+    }
+}
+```
+>线程A首先执行writer()方法；    
+线程B线程接着执行reader()方法；  
+线程B在int i=a+1,是不一定能看到a已经被赋值为1，
+因为在writer中，两句话顺序可能打乱。
+>>eg.线程A执行到flag=true，线程B也执行了，此时a=0，紧接着A再执行完a=1。
+
+- 指令重排 – 保证有序性的方法
+```JAVA  
+class OrderExample {
+    int a = 0;
+    boolean flag = false;
+
+    public synchronized void writer() {
+        a = 1;
+        flag = true;
+    }
+
+    public synchronized void reader() {
+        if (flag) {
+            int i =  a +1;
+            //……
+        }
+    }
+}
+```
+>同步后，即使做了writer重排，因为互斥的缘故，reader 线程看writer线程也是顺序执行的。
+>>eg.线程A,flag=true,a=1;然后执行线程B，flag=true(此时a=1)。
+
+- 指令重排的基本原则  
+a=4;  
+b=a+4;
+>程序顺序原则：一个线程内保证语义的串行性;  
+volatile规则：volatile变量的写，先发生于读;  
+锁规则：解锁(unlock)必然发生在随后的加锁(lock)前;  
+传递性：A先于B，B先于C 那么A必然先于C
+线程的start方法先于它的每一个动作
+线程的所有操作先于线程的终结（Thread.join()）;  
+线程的中断（interrupt()）先于被中断线程的代码;  
+对象的构造函数执行结束先于finalize()方法.
+
+### 编译和解释运行的概念
+- 解释运行
+>解释执行以解释方式运行字节码;  
+解释执行的意思是：读一句执行一句.  
+
+- 编译运行（JIT）
+>将字节码编译成机器码;  
+直接执行机器码;  
+运行时编译;  
+编译后性能有数量级的提升.
 
 
 
