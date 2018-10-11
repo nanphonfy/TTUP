@@ -276,3 +276,72 @@ Heap
 >导出OOM的路径
 
 `-Xmx20m -Xms5m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=F:\Java\a.dump`
+
+`-XX:OnOutOfMemoryError`
+>在OOM时，执行一个脚本-XX:OnOutOfMemoryError=F:\Java\jre1.8.0_71\bin\printstack.bat %p
+
+>当程序OOM时，在D:/a.txt中将会生成线程的dump（D:/tools/jdk1.7_40/bin/jstack -F %1 > D:/a.txt）
+>>可以在OOM时，发送邮件，甚至是重启程序
+
+- 总结
+>根据实际事情调整新生代和幸存代的大小  
+官方推荐新生代占堆的3/8  
+幸存代占新生代的1/10  
+在OOM时，记得Dump出堆，确保可以排查现场问题  
+
+### 永久区分配参数
+`-XX:PermSize  -XX:MaxPermSize`
+>设置永久区的初始空间和最大空间  
+>他们表示，一个系统可以容纳多少个类型  
+>使用CGLIB等库的时候，可能会产生大量的类，这些类，有可能撑爆永久区导致OOM  
+```java 
+public class T3 {
+    public static void main(String[] args) {
+        //不断产生新的类
+
+        /*for(int i=0;i<100000;i++){
+            CglibBean bean = new CglibBean("geym.jvm.ch3.perm.bean"+i,new HashMap());
+        }*/
+    }
+}
+```
+
+>打开堆的Dump  
+堆空间实际占用非常少  
+但是永久区溢出 一样抛出OOM  
+如果堆空间没有用完也抛出了OOM，有可能是永久区导致的
+
+
+### 栈大小分配
+`-Xss`
+>通常只有几百K  
+决定了函数调用的深度  
+每个线程都有独立的栈空间  
+局部变量、参数 分配在栈上
+
+```java 
+public class TestStackDeep {
+    private static int count=0;
+    public static void recursion(long a,long b,long c){
+        long e=1,f=2,g=3,h=4,i=5,k=6,q=7,x=8,y=9,z=10;
+        count++;
+        recursion(a,b,c);
+    }
+    public static void main(String args[]){
+        try{
+            recursion(0L,0L,0L);
+        }catch(Throwable e){
+            System.out.println("deep of calling = "+count);
+            e.printStackTrace();
+        }
+    }
+}
+```
+- 递归调用  
+-Xss128K
+>deep of calling = 294  
+java.lang.StackOverflowError
+
+-Xss256K
+>deep of calling = 859  
+java.lang.StackOverflowError
