@@ -20,11 +20,13 @@
 >>线程间共享变量存储在主内存中，每个线程都有私有的本地内存（读/写共享变量的副本，抽象概念不真实存在）。JMM涵盖了缓存、写缓冲区、寄存器及其他的硬件和编译器优化。
 
 - 图1
+![java内存模型抽象](https://raw.githubusercontent.com/nanphonfy/note-images/master/TTUP/understanding-the-jvm/understanding-java-memory-model/01/jmm-abstract-view.png)
 >线程A与线程B通信，步骤：  
 ①线程A把本地内存A中更新过的共享变量刷新到主内存；  
 ②线程B到主内存读取线程A已更新过的共享变量。
 
 - 图2
+![java内存模型抽象2](https://raw.githubusercontent.com/nanphonfy/note-images/master/TTUP/understanding-the-jvm/understanding-java-memory-model/01/jmm-abstract-view2.png)
 >假若本地内存A、B都有主内存的共享变量x的副本(默认都为0)。  
 ①线程A更新x值为1，临时存放本地内存A；  
 ②线程A和线程B需通信时，线程A会把修改后的x值刷新到内存，随后线程B到主内存读取线程A更新后的值。  
@@ -60,5 +62,44 @@ a=1; //A1 | b=1;//B1
 x=b; //A2 | y=a;//B2
 初始状态：a=b=0 处理器执行后得到结果：x=y=0|
 
+- 图3  
+![处理器重排序](https://raw.githubusercontent.com/nanphonfy/note-images/master/TTUP/understanding-the-jvm/understanding-java-memory-model/01/processor_reorder.png)
+
+>①处理器A、B同时把共享变量写入自己的写缓冲区(A1、B1)；
+②从内存读取另一个共享变量(A2、B2)；
+③将写缓冲区保存的脏数据刷新到内存（A3、B3）；
+④x=y=0。
+
+>从内存实际操作顺序看，处理器A在A3才刷新写缓冲区，写操作A1才算真正执行。  
+虽处理器A执行内存顺序：A1->A2，但实际内存顺序：A2->A1，此时处理器A的内存操作顺序被重排序了（同理处理器B）。
+>>由于写缓冲区仅对自己的处理器可见，导致处理器执行内存操作顺序与内存实际~不一致。
 
 
+##### 内存屏障指令
+>为保证内存可见性，java编译器生成指令序列的适当位置会插入内存屏障指令禁止特定类型的处理器重排序。
+
+- JMM内存屏障指令分类
+
+屏障类型 | 指令示例 | 说明
+---|---|---
+LoadLoad Barriers | Load1;LoadLoad;Load2 | Load1数据指令装载在Load2之前(及后续装载指令的装载)
+StoreStore Barriers | Store1;StoreStore;Store2 | Store1数据对其他处理器可见(刷新到内存)，在Store2之前(及后续存储指令的存储)
+LoadStore Barriers | Load1;LoadStore;Store2 | Load1数据装载在Store2之前(及后续存储指令刷新到内存)
+StoreLoad Barriers | Store1;StoreLoad;Load2 | Store1数据对其他处理器可见(刷新到内存)，在Load2之前(及后续装载指令的装载)
+
+>StoreLoad Barriers是“全能型”屏障，具有其他三个屏障的效果（大都处理器都支持，其他类型的屏障不一定支持）。  
+执行该屏障开销很昂贵，要把写缓冲区中的数据全部刷新到内存中。
+
+#### happens-before
+>JMM中，若一个操作执行结果需对另一个操作可见，那两操作（一个线程内或不同线程间）间必须存在happens-before关系。
+
+>- 程序顺序规则：一个线程的每个操作，happens-before于该线程任意后续操作；
+>- 监视器锁规则：对一个监视器的解锁，happens-before于随后对这个监视器的加锁；
+>- volatile变量规则：对一个volatile域的写，happens-before于任意后续对这个volatile域的读；
+>- 传递性：A happens-beforeB，B happens-before于 C，那么A happens-before于 C。
+>happens-before仅要求前一个操作(执行的结果)对后一个操作可见，并不必须要在后一个操作前执行（前一个操作按顺序排在第二个操作前）。  
+
+- happens-before与JMM关系图
+(https://raw.githubusercontent.com/nanphonfy/note-images/master/TTUP/understanding-the-jvm/understanding-java-memory-model/01/happens-before-and-jmm.png)
+
+>一个happens-before规则对应一或多个编译器和处理器重排序规则，其规则简单易懂。
