@@ -100,6 +100,6 @@ StoreLoad Barriers | Store1;StoreLoad;Load2 | Store1数据对其他处理器可�
 >happens-before仅要求前一个操作(执行的结果)对后一个操作可见，并不必须要在后一个操作前执行（前一个操作按顺序排在第二个操作前）。  
 
 - happens-before与JMM关系图
-(https://raw.githubusercontent.com/nanphonfy/note-images/master/TTUP/understanding-the-jvm/understanding-java-memory-model/01/happens-before-and-jmm.png)
+![happens-before与JMM关系图](https://raw.githubusercontent.com/nanphonfy/note-images/master/TTUP/understanding-the-jvm/understanding-java-memory-model/01/happens-before-and-jmm.png)
 
 >一个happens-before规则对应一或多个编译器和处理器重排序规则，其规则简单易懂。
